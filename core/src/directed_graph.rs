@@ -7,7 +7,7 @@ use crate::graph::*;
 /// edge attributes
 #[derive(Debug, PartialEq)]
 pub struct DirectedGraph {
-    // Each edge is indexed for by of both its vertices => 1 edge appears twice in the map
+    // Each edge is indexed by both its vertices => 1 edge appears twice in the map
     edge_map: HashMap<VertexId, Vec<Edge>>,
 }
 
@@ -103,25 +103,6 @@ impl DirectedGraph {
     }
 
     pub fn remove_vertex(&mut self, _vertex_id: VertexId) -> bool {
-        // if let Some(edges) = self.edge_map.remove(&vertex_id) {
-        //     // We need to remove all edges containing the vertex
-        //     for &edge in edges.iter() {
-        //         let Edge(v1, v2) = edge;
-        //         if v1 != vertex_id {
-        //             self.edge_map
-        //                 .get_mut(&v1)
-        //                 .map(|v1_edges| v1_edges.remove(edge));
-        //         }
-        //         if v2 != vertex_id {
-        //             self.edge_map
-        //                 .get_mut(&v2)
-        //                 .map(|v2_edges| v2_edges.remove(edge));
-        //         }
-        //     }
-        //     true
-        // } else {
-        //     false
-        // }
         unimplemented!()
     }
 
@@ -136,16 +117,6 @@ impl DirectedGraph {
     }
 
     pub fn remove_edge(&mut self, _edge: Edge) -> bool {
-        // let Edge(v1, v2) = edge;
-        // let mut found = false;
-        // if let Some(found_v1) = self.edge_map.get_mut(&v1) {
-        //     found |= found_v1.remove(&edge);
-        // }
-        // if let Some(found_v2) = self.edge_map.get_mut(&v2) {
-        //     found |= found_v2.remove(&edge);
-        // }
-        // found
-
         unimplemented!()
     }
 }
