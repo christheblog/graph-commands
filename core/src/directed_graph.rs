@@ -22,6 +22,10 @@ impl DirectedGraph {
         self.vertex_count() == 0
     }
 
+    pub fn head_option(&self) -> Option<&VertexId> {
+        self.edge_map.keys().next()
+    }
+
     pub fn vertex_count(&self) -> usize {
         self.edge_map.len()
     }
