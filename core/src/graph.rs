@@ -14,9 +14,7 @@ pub struct VertexId(pub u64);
 #[derive(PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, Debug)]
 pub struct Edge(pub VertexId, pub VertexId);
 
-
 impl Edge {
-
     pub fn reverse(&self) -> Edge {
         let Edge(v1, v2) = *self;
         Edge(v2, v1)

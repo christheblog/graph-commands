@@ -42,7 +42,7 @@ pub fn bfs_iter(graph: &DirectedGraph) -> BreadthFirstIter {
     }
 }
 
-/// Returns a new depth first search iterator on the given graph, starting from the given start_vertex
+/// Returns a new breadth first search iterator on the given graph, starting from the given start_vertex
 pub fn bfs_iter_from(graph: &DirectedGraph, start_vertex: VertexId) -> BreadthFirstIter {
     let mut iter = empty_bfs_iter(graph);
     iter.queue.push(start_vertex);

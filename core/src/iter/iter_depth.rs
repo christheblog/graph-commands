@@ -5,7 +5,6 @@ use crate::iter::iter_datastructure::{SearchQueue, Stack};
 
 use std::collections::HashSet;
 
-
 ///! Depth-First search iterator
 
 pub struct DepthFirstIter<'a> {

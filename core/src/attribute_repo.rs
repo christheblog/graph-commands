@@ -12,7 +12,7 @@ pub struct AttrRepo<'a, T> {
     attributes: HashMap<AttrId, Attr<'a, T>>,
 }
 
-impl<'a,T> AttrRepo<'a,T> {
+impl<'a, T> AttrRepo<'a, T> {
     pub fn get_by_id(&self, id: &AttrId) -> Option<&Attr<T>> {
         self.attributes.get(id)
     }
