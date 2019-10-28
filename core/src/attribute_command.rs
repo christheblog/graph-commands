@@ -25,13 +25,13 @@ impl AttributeCommand {
         }
     }
 
-    pub fn apply_to<T>(&self, repo: &mut AttrRepo<T>) {
+    pub fn apply_to<T>(&self, _repo: &mut AttrRepo<T>) {
         use AttributeCommand::*;
         match self {
-            AddVertexAttr(v, a) => unimplemented!(),
-            RemoveVertexAttr(v, a) => unimplemented!(),
-            AddEdgeAttr(v1, v2, a) => unimplemented!(),
-            RemoveEdgeAttr(v1, v2, a) => unimplemented!(),
+            AddVertexAttr(_v, _a) => unimplemented!(),
+            RemoveVertexAttr(_v, _a) => unimplemented!(),
+            AddEdgeAttr(_v1, _v2, _a) => unimplemented!(),
+            RemoveEdgeAttr(_v1, _v2, _a) => unimplemented!(),
         }
     }
 }

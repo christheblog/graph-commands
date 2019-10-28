@@ -5,7 +5,7 @@ use core::cmp::Ordering;
 #[derive(PartialEq, Eq, Clone, Hash, Debug)]
 pub struct Path {
     // FIXME used immutable Linked list here for cheap append + structural sharing
-    vertices: Vec<VertexId>,
+    pub vertices: Vec<VertexId>,
 }
 
 impl Path {
@@ -13,12 +13,24 @@ impl Path {
         Path { vertices: vec![] }
     }
 
+    pub fn from(vertices: &Vec<VertexId>) -> Path {
+        Path { vertices: vertices.clone() }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.vertices.is_empty()
+    }
+
     pub fn size(&self) -> usize {
         self.vertices.len()
     }
 
-    pub fn contains(&self, vertex: &VertexId) -> bool {
+    pub fn contains_vertex(&self, vertex: &VertexId) -> bool {
         self.vertices.contains(vertex)
+    }
+
+    pub fn contains_edge(&self, edge: &Edge) -> bool {
+        self.to_edge_list().find(|e| e==edge).is_some()
     }
 
     pub fn to_edge_list(&self) -> impl Iterator<Item = Edge> + '_ {

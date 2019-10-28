@@ -49,19 +49,8 @@ where
     }
 }
 
-/// Returns a new best first search iterator on the given graph
-pub fn best_iter<F>(graph: &DirectedGraph, scorefn: F) -> BestFirstIter<F>
-where
-    F: Fn(&DirectedGraph, &Path) -> i64,
-{
-    match graph.head_option() {
-        None => empty_best_iter(graph, scorefn),
-        Some(head) => bfs_iter_from(graph, scorefn, *head),
-    }
-}
-
 /// Returns a new best first search iterator on the given graph, starting from the given start_vertex
-pub fn bfs_iter_from<F>(
+pub fn best_iter_from<F>(
     graph: &DirectedGraph,
     scorefn: F,
     start_vertex: VertexId,
@@ -88,5 +77,130 @@ where
         visited: HashSet::new(),
         graph: graph,
         scorefn: scorefn,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::iter::Iterator;
+
+    // score returns the node id of the last node of the path
+    fn score(_graph: &DirectedGraph, path: &Path) -> i64 {
+        match path.last() {
+            Some(VertexId(x)) => *x as i64,
+            None => 0,
+        }
+    }
+
+    #[test]
+    fn best_iterator_from_on_a_one_node_graph_should_return_a_one_node_path() {
+        let mut g = DirectedGraph::new();
+        g.add_vertex(VertexId(1));
+        let mut it = best_iter_from(&g, score, VertexId(1));
+        assert_eq![
+            it.next(),
+            Some(ScoredPath {
+                path: Path {
+                    vertices: vec![VertexId(1)]
+                },
+                score: 1
+            }),
+            "Iterator should return the only one-node path"
+        ];
+        assert![it.next().is_none(), "Iterator should now be empty"]
+    }
+
+    #[test]
+    fn best_iterator_return_reachable_nodes_in_a_breadth_first_search_order() {
+        fn edge_from(src: u64, end: u64) -> Edge {
+            Edge(VertexId(src), VertexId(end))
+        }
+
+        let mut g = DirectedGraph::new();
+        g.add_edge(edge_from(1, 2));
+        g.add_edge(edge_from(1, 4));
+        g.add_edge(edge_from(2, 3));
+        g.add_edge(edge_from(2, 5));
+        g.add_edge(edge_from(1, 5));
+        g.add_edge(edge_from(4, 5));
+        g.add_edge(edge_from(4, 6));
+        g.add_edge(edge_from(6, 7));
+        g.add_edge(edge_from(7, 2));
+        // 8 is NOT reachable from 1
+        g.add_edge(edge_from(8, 2));
+
+        // BFS order from vertex 1
+        let it = best_iter_from(&g, score, VertexId(1));
+        assert_eq![
+            it.collect::<Vec<ScoredPath>>(),
+            vec![
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1)]
+                    },
+                    score: 1
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(5)]
+                    },
+                    score: 5
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(4)]
+                    },
+                    score: 4
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(4), VertexId(6)]
+                    },
+                    score: 6
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(4), VertexId(6), VertexId(7)]
+                    },
+                    score: 7
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(2)]
+                    },
+                    score: 2
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(2), VertexId(3)]
+                    },
+                    score: 3
+                }
+            ],
+            "Best order is wrong when starting from Vertex 1"
+        ];
+    }
+
+    #[test]
+    fn best_iterator_does_not_loop_when_encountering_a_cycle() {
+        fn edge_from(src: u64, end: u64) -> Edge {
+            Edge(VertexId(src), VertexId(end))
+        }
+
+        let mut g = DirectedGraph::new();
+        // cycle
+        g.add_edge(edge_from(1, 2));
+        g.add_edge(edge_from(2, 3));
+        g.add_edge(edge_from(3, 4));
+        g.add_edge(edge_from(4, 5));
+        g.add_edge(edge_from(5, 1));
+
+        let it = best_iter_from(&g, score, VertexId(1));
+        assert_eq![
+            it.collect::<Vec<ScoredPath>>().len(),
+            5,
+            "Best returned an invalid length"
+        ];
     }
 }
