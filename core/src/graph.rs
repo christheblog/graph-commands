@@ -1,10 +1,3 @@
-//! This module defines the basic building blocks of a graph.
-//!
-//! [`VertexId`] to identify a vertex, and [`Edge`], a connection between two vertices.
-//!
-//! [`VertexId`]: struct.VertexId.html
-//! [`Edge`]: struct.Edge.html
-
 /// Identifies and represents a vertex in a graph.
 #[derive(PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, Debug)]
 pub struct VertexId(pub u64);

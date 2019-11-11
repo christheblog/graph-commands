@@ -5,3 +5,4 @@ pub mod graph;
 pub mod graph_command;
 pub mod iter;
 pub mod path;
+pub mod search;
