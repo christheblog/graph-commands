@@ -99,10 +99,14 @@ mod tests {
     // Shortest path with constraint
 
     #[test]
-    fn shortest_path_should_find_the_shortest_path_satisfying_constraints_when_it_exists() {}
+    fn shortest_path_should_find_the_shortest_path_satisfying_constraints_when_it_exists() {
+        assert![false];
+    }
 
     #[test]
-    fn shortest_path_should_return_none_when_no_shortest_path_satisfying_constraints_exists() {}
+    fn shortest_path_should_return_none_when_no_shortest_path_satisfying_constraints_exists() {
+        assert![false];
+    }
 
     // Helpers
 
