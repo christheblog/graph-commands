@@ -39,8 +39,8 @@ where
 /// end
 pub fn constrained_shortest_path<G, H>(
     graph: &DirectedGraph,
-    g: G, // computing current cost of the path so far
-    h: H, // heuristic
+    g: G, // Cost of the path so far
+    h: H, // Heuristic - estimated cost to target
     start: VertexId,
     end: VertexId,
     constraints: Vec<Constraint>,

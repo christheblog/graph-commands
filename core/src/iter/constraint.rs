@@ -37,9 +37,9 @@ pub enum Constraint {
 }
 
 impl Constraint {
-    // Check applied on a PARTIAL Path
-    // This check MUST return true IF the constraint has still a chance to be met later on
-    // (ie the Path will have more vertices added to it, and score will be increased)
+    /// Check applied on a PARTIAL Path
+    /// This check MUST return true IF the constraint has still a chance to be met later on
+    /// (ie the Path will have more vertices added to it, and score will be increased)
     pub fn check_partial(&self, partial: &ScoredPath) -> bool {
         use Constraint::*;
         match self {
@@ -59,6 +59,7 @@ impl Constraint {
         }
     }
 
+    /// Check applied on a COMPLETE Path
     pub fn check_complete(&self, full: &ScoredPath) -> bool {
         use Constraint::*;
         match self {
@@ -79,8 +80,18 @@ impl Constraint {
 
     // Check the verices in the path appears by the specified order of ordered
     // Note: All vertices of ordered don't have to appear in the path
-    fn check_vertices_order(_path: &Path, _ordered: &Vec<VertexId>) -> bool {
-        // FIXME how to implement this check efficiently ?
+    fn check_vertices_order(path: &Path, ordered: &Vec<VertexId>) -> bool {
+        // FIXME how to implement this check efficiently ? O(n^2) ...
+        let mut start_from = 0;
+        for vertex in &path.vertices {
+            if let Some(index) = ordered.iter().position(|v| v == vertex) {
+                if index < start_from {
+                    return false;
+                } else {
+                    start_from = index;
+                }
+            }
+        }
         true
     }
 }
@@ -131,7 +142,7 @@ mod tests {
         let path = score_of(path_of(vec![1, 2]), 1);
         assert_eq!(
             Constraint::check_partial(
-                &OrderedVertices(vec![VertexId(2), VertexId(5), VertexId(1)]),
+                &OrderedVertices(vec![VertexId(1), VertexId(5), VertexId(2), VertexId(7)]),
                 &path
             ),
             true
@@ -272,7 +283,7 @@ mod tests {
 
     //
     // Complete constraints
-    // (ie once the path is complete - not new vertex will be added)
+    // (ie once the path is complete - no new vertex will be added)
     //
 
     // ContainsVertex
