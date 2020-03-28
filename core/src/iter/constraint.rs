@@ -81,14 +81,19 @@ impl Constraint {
     // Check the verices in the path appears by the specified order of ordered
     // Note: All vertices of ordered don't have to appear in the path
     fn check_vertices_order(path: &Path, ordered: &Vec<VertexId>) -> bool {
-        // FIXME how to implement this check efficiently ? O(n^2) ...
+        use std::collections::HashMap;
+        // Cache : vertex -> index in the vector (relative position index)
+        let mut vertex_to_index = HashMap::with_capacity(ordered.len());
+        for (index, vertex) in ordered.iter().enumerate() {
+            vertex_to_index.insert(vertex, index);
+        }
         let mut start_from = 0;
         for vertex in &path.vertices {
-            if let Some(index) = ordered.iter().position(|v| v == vertex) {
-                if index < start_from {
+            if let Some(relative_index) = vertex_to_index.get(vertex) {
+                if *relative_index < start_from {
                     return false;
                 } else {
-                    start_from = index;
+                    start_from = *relative_index;
                 }
             }
         }
