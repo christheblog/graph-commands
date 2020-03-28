@@ -1,4 +1,6 @@
 use crate::directed_graph::DirectedGraph;
+use crate::format::utils;
+use crate::graph::Edge;
 use crate::graph::VertexId;
 use crate::graph_command::GraphCommand;
 use crate::graph_command::GraphCommand::AddEdge;
@@ -7,33 +9,20 @@ use crate::graph_command::GraphCommand::AddVertex;
 use lazy_static::*;
 use regex::Regex;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufWriter, Write};
 
+///
+/// Reading TGF files
+///
 
-// Reads a TGF into a DirectedGraph
+/// Reads a TGF into a DirectedGraph
 pub fn read(file: File) -> Result<DirectedGraph, String> {
-    read_as_commands(file)
-        .map(|commands| {
-            let mut graph = DirectedGraph::new();
-            GraphCommand::apply_commands(commands, &mut graph);
-            graph
-        })
+    utils::read(file, parse_line, is_comment)
 }
 
 /// Reads a TGF file as a list of commands
 pub fn read_as_commands(file: File) -> Result<Vec<GraphCommand>, String> {
-    let reader = BufReader::new(file);
-    let mut result: Vec<GraphCommand> = vec![];
-    for (index, line) in reader.lines().enumerate() {
-        let line = line.unwrap(); // Ignore errors.
-        if !line.is_empty() && !is_comment(&line) {
-            match parse_line(&line) {
-                Ok(command) => result.push(command),
-                Err(msg) => return Err(format!["Error at line {}: {}", index + 1, msg]),
-            }
-        }
-    }
-    Ok(result)
+    utils::read_as_commands(file, parse_line, is_comment)
 }
 
 // Parses a line into a GraphCommand
@@ -57,6 +46,25 @@ fn parse_line(line: &str) -> Result<GraphCommand, String> {
 
 fn is_comment(line: &str) -> bool {
     line.trim().starts_with("#")
+}
+
+///
+/// Writing TGF files
+///
+
+/// Saves a DirectedGraph into a TGF
+pub fn save(graph: &DirectedGraph, filename: String) -> std::io::Result<()> {
+    let file = File::create(filename)?;
+    let mut buffered = BufWriter::new(file);
+    for vertex in graph.vertices() {
+        let VertexId(vertex_id) = vertex;
+        writeln!(buffered, "{}", vertex_id)?;
+    }
+    for edge in graph.edges() {
+        let Edge(VertexId(src), VertexId(dest)) = edge;
+        writeln!(buffered, "{} {}", src, dest)?;
+    }
+    Ok(())
 }
 
 #[cfg(test)]
