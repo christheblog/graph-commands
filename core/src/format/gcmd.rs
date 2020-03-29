@@ -92,7 +92,7 @@ pub fn save(graph: &DirectedGraph, filename: String) -> std::io::Result<()> {
 
 /// Updates an existing file with a list of GraphCommand
 /// New commands will be appended at the end of the file
-pub fn add_commands(filename: String, commands: Vec<GraphCommand>) -> std::io::Result<()> {
+pub fn add_commands(filename: &str, commands: Vec<GraphCommand>) -> std::io::Result<()> {
     let file = OpenOptions::new().write(true).append(true).open(filename)?;
     let mut buffered = BufWriter::new(file);
     for command in commands {
