@@ -29,7 +29,7 @@ fn main() {
             Arg::with_name("silent")
                 .long("silent")
                 .short("s")
-                .help("Don't print anything on stdout")
+                .help("Don't print anything on stdout in case of success")
                 .required(false)
                 .max_values(1)
                 .takes_value(false),
@@ -38,20 +38,23 @@ fn main() {
 
     let path = args.value_of("path").unwrap();
     let force = args.is_present("force");
-    let silent = args.is_present("slient");
+    let silent = args.is_present("silent");
 
     if !force {
-        // FIXME ask for a yes no confirmation
+        let yes_no = utils::confirmation_yes_no(&format!("Are you sure you want to clean graph at '{}' ? (yes/no)", path));
+        if !yes_no {
+            println!("Aborting.");
+            return ();
+        }
     }
 
     if !silent {
         println!("Cleaning graph under '{}' ...", path);
     }
     utils::clean(path).expect(&format![
-        "A problem occured. Path '{}' might not exist, or teh graph is currently lock (check 'lock' file)",
+        "A problem occured. Path '{}' might not exist, or the graph is currently lock (check 'lock' file)",
         path
     ]);
-
     if !silent {
         println!("Done.");
     }

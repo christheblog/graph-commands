@@ -136,6 +136,17 @@ pub fn parse_vertex_id(v: &str) -> Option<u64> {
     v.parse::<u64>().ok()
 }
 
+pub fn confirmation_yes_no(msg: &str) -> bool {
+    let mut buffer = String::new();
+    println!("{}", msg);
+    std::io::stdin().read_line(&mut buffer)
+        .expect("Invalid UTF-8 bytes");
+    match buffer.to_string().trim().as_ref() {
+        "yes" | "y" => true,
+        "no" | _ => false,
+    }
+}
+
 /// Helpers
 
 fn touch(path: &path::Path) -> io::Result<()> {
