@@ -106,8 +106,17 @@ impl DirectedGraph {
         contains_vertex
     }
 
-    pub fn remove_vertex(&mut self, _vertex_id: VertexId) -> bool {
-        unimplemented!()
+    pub fn remove_vertex(&mut self, vertex_id: VertexId) -> bool {
+        let (found, edges) = match self.edge_map.get(&vertex_id) {
+            None => (false, vec![]),
+            Some(edges) => (true, edges.clone()),
+        };
+        // Removing all edges containing the vertex
+        self.edge_map.remove(&vertex_id);
+        edges.iter().for_each(|e| {
+            self.remove_edge(*e);
+        });
+        found
     }
 
     pub fn add_edge(&mut self, edge: Edge) {
@@ -120,8 +129,15 @@ impl DirectedGraph {
         }
     }
 
-    pub fn remove_edge(&mut self, _edge: Edge) -> bool {
-        unimplemented!()
+    pub fn remove_edge(&mut self, edge: Edge) -> bool {
+        let Edge(src, dst) = edge;
+        self.edge_map
+            .get_mut(&src)
+            .map(|edges| edges.retain(|e| *e != edge));
+        self.edge_map
+            .get_mut(&dst)
+            .map(|edges| edges.retain(|e| *e != edge));
+        true // FIXME how to quickly check to know if we have removed something or not ?
     }
 }
 
@@ -131,28 +147,162 @@ mod test {
     use crate::graph::{Edge, VertexId};
 
     #[test]
+    fn test_add_vertex() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_vertex(vertex(0));
+        assert!(digraph.contains_vertex(vertex(0)));
+    }
+
+    #[test]
+    fn test_remove_existing_vertex_work() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_vertex(vertex(0));
+        assert!(digraph.contains_vertex(vertex(0)));
+        assert!(digraph.remove_vertex(vertex(0)));
+        assert!(!digraph.contains_vertex(vertex(0)));
+    }
+
+    #[test]
+    fn test_remove_existing_vertex_removes_all_related_edges_too() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_vertex(vertex(0));
+        digraph.add_vertex(vertex(1));
+        digraph.add_vertex(vertex(2));
+        digraph.add_vertex(vertex(3));
+        digraph.add_edge(edge(1, 2));
+        digraph.add_edge(edge(3, 1));
+        digraph.add_edge(edge(2, 3));
+        // Removing vertex 1 should remove both edges containing it
+        assert!(digraph.remove_vertex(vertex(1)));
+        assert!(!digraph.contains_edge(edge(1, 2)));
+        assert!(!digraph.contains_edge(edge(3, 1)));
+        // Still contain unrelated edge
+        assert!(digraph.contains_edge(edge(2, 3)));
+    }
+
+    #[test]
+    fn test_remove_non_existing_vertex_has_no_effect() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_vertex(vertex(0));
+        assert!(digraph.contains_vertex(vertex(0)));
+        assert!(!digraph.remove_vertex(vertex(1)));
+        assert!(digraph.contains_vertex(vertex(0)));
+    }
+
+    #[test]
+    fn test_add_edge_with_existing_vertices_works() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_vertex(vertex(0));
+        digraph.add_vertex(vertex(1));
+        // No edges yet
+        assert!(!digraph.contains_edge(edge(0, 1)));
+        assert!(!digraph.contains_edge(edge(1, 0)));
+        // Adding edge
+        digraph.add_edge(edge(1, 0));
+        assert!(!digraph.contains_edge(edge(0, 1)));
+        assert!(digraph.contains_edge(edge(1, 0)));
+    }
+
+    #[test]
+    fn test_add_edge_with_non_existing_vertices_works() {
+        let mut digraph = DirectedGraph::new();
+        assert!(!digraph.contains_vertex(vertex(0)));
+        assert!(!digraph.contains_vertex(vertex(1)));
+        // Adding edge
+        digraph.add_edge(edge(1, 0));
+        assert!(digraph.contains_edge(edge(1, 0)));
+    }
+
+    #[test]
+    fn test_adding_an_edge_does_not_add_the_reverted_edge() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_edge(edge(1, 0));
+        assert!(!digraph.contains_edge(edge(0, 1)));
+    }
+
+    #[test]
+    fn test_removing_an_edge_removes_only_that_edge() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_edge(edge(1, 0));
+        digraph.add_edge(edge(2, 1));
+        digraph.add_edge(edge(0, 1));
+        // Remove edge 0->1
+        digraph.remove_edge(edge(0, 1));
+        assert!(!digraph.contains_edge(edge(0, 1)));
+        // Unremoved edges are still present
+        assert!(digraph.contains_edge(edge(1, 0)));
+        assert!(digraph.contains_edge(edge(2, 1)));
+    }
+
+    #[test]
+    fn test_remove_non_existing_edge_has_no_effect() {
+        let mut digraph = DirectedGraph::new();
+        digraph.add_edge(edge(1, 0));
+        digraph.add_edge(edge(2, 1));
+        digraph.add_edge(edge(0, 1));
+        assert!(digraph.edge_count() == 3);
+        // Remove non-existing edge 7->8
+        digraph.remove_edge(edge(7, 8));
+        assert!(digraph.edge_count() == 3);
+    }
+
+    #[test]
+    fn test_an_edge_can_appear_several_times() {
+        let mut digraph = DirectedGraph::new();
+        // 3 times same edge is added
+        digraph.add_edge(edge(0, 1));
+        digraph.add_edge(edge(0, 1));
+        digraph.add_edge(edge(0, 1));
+        // Others
+        digraph.add_edge(edge(1, 2));
+        digraph.add_edge(edge(1, 3));
+        // 5 edges in the graph
+        assert!(digraph.edge_count() == 5);
+    }
+
+    #[test]
+    fn test_removing_an_edge_removes_all_occurences_of_this_edge() {
+        let mut digraph = DirectedGraph::new();
+        // 3 times same edge is added
+        digraph.add_edge(edge(0, 1));
+        digraph.add_edge(edge(0, 1));
+        digraph.add_edge(edge(0, 1));
+        // others
+        digraph.add_edge(edge(1, 2));
+        digraph.add_edge(edge(1, 3));
+
+        assert!(digraph.edge_count() == 5);
+        digraph.remove_edge(edge(0, 1));
+        // All occurences of edge(0,0) have been removed
+        assert!(digraph.edge_count() == 2);
+        assert!(!digraph.contains_edge(edge(0, 1)));
+    }
+
+    #[test]
     fn test_ne() {
-        let mut graph_1 = DirectedGraph::new();
-        graph_1.add_vertex(VertexId(0));
-        graph_1.add_vertex(VertexId(1));
-        graph_1.add_vertex(VertexId(2));
+        let mut g1 = DirectedGraph::new();
+        g1.add_edge(Edge(VertexId(0), VertexId(0)));
+        g1.add_edge(Edge(VertexId(0), VertexId(1)));
+        g1.add_edge(Edge(VertexId(0), VertexId(2)));
 
-        graph_1.add_edge(Edge(VertexId(0), VertexId(1)));
-        graph_1.add_edge(Edge(VertexId(0), VertexId(2)));
-        graph_1.add_edge(Edge(VertexId(0), VertexId(0)));
+        let mut g2 = DirectedGraph::new();
+        g2.add_edge(Edge(VertexId(0), VertexId(0)));
+        g2.add_edge(Edge(VertexId(0), VertexId(1)));
+        g2.add_edge(Edge(VertexId(0), VertexId(2)));
+        // re-adding teh same edeg changes teh graph => not idem-potent
+        // FIXME shall we keep that behavior ?
+        g2.add_edge(Edge(VertexId(0), VertexId(1)));
 
-        let mut graph_2 = DirectedGraph::new();
-        graph_2.add_vertex(VertexId(0));
-        graph_2.add_vertex(VertexId(1));
-        graph_2.add_vertex(VertexId(2));
+        assert_ne!(g1, g2);
+    }
 
-        graph_2.add_edge(Edge(VertexId(0), VertexId(0)));
-        graph_2.add_edge(Edge(VertexId(0), VertexId(0)));
-        graph_2.add_edge(Edge(VertexId(0), VertexId(1)));
-        graph_2.add_edge(Edge(VertexId(0), VertexId(2)));
-        graph_2.add_edge(Edge(VertexId(0), VertexId(2)));
-        graph_2.add_edge(Edge(VertexId(0), VertexId(1)));
+    // Helpers
 
-        assert_ne!(graph_1, graph_2);
+    fn vertex(id: u64) -> VertexId {
+        VertexId(id)
+    }
+
+    fn edge(src: u64, dst: u64) -> Edge {
+        Edge(VertexId(src), VertexId(dst))
     }
 }
