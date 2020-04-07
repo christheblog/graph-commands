@@ -76,7 +76,7 @@ fn is_comment(line: &str) -> bool {
 ///
 
 /// Saves a DirectedGraph into a gcmd file
-pub fn save(graph: &DirectedGraph, filename: String) -> std::io::Result<()> {
+pub fn save(graph: &DirectedGraph, filename: &str) -> std::io::Result<()> {
     let file = File::create(filename)?;
     let mut buffered = BufWriter::new(file);
     for vertex in graph.vertices() {

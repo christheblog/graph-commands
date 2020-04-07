@@ -120,7 +120,6 @@ fn main() {
         .map(|vids| vids.map(|v| v.parse::<u64>().expect("Invalid vertex id")))
         .map(|vids| clique_from_vertices(vids.map(|vid| VertexId(vid)).collect()))
         .map(|vids| utils::add_edges(path, vids));
-
 }
 
 fn chain_from_vertices(vertices: Vec<VertexId>) -> Vec<(VertexId, VertexId)> {

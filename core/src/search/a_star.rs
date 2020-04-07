@@ -58,9 +58,15 @@ where
     .find(|sp| sp.path.last().map(|x| *x) == Some(end))
 }
 
+/// Weight of one per edge
+pub fn one_weighted_edge(_: &DirectedGraph, path: &Path) -> i64 {
+    use std::convert::TryInto;
+    path.size().try_into().unwrap()
+}
+
 /// Zero information heuristic function
 /// Equivalent to not having an heuristic
-pub fn zero_heuristic(_graph: &DirectedGraph, _path: &Path) -> i64 {
+pub fn zero_heuristic(_: &DirectedGraph, _: &Path) -> i64 {
     0
 }
 

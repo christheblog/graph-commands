@@ -61,6 +61,11 @@ fn load_graph_from_path(filepath: &path::Path) -> Result<DirectedGraph, String> 
     }
 }
 
+pub fn save_graph_as_commands(filepath: &str, graph: &DirectedGraph) -> io::Result<()> {
+    let command_path = command_path(filepath);
+    gcmd::save(graph, command_path.as_ref().to_str().expect("Invalid path. (UTF-9 ?)"))
+}
+
 /// Cleans-up the graph directory structure
 /// This can not be undone
 pub fn clean(root_dir: &str) -> std::io::Result<()> {

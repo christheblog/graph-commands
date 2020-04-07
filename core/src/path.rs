@@ -33,6 +33,10 @@ impl Path {
         self.to_edge_list().find(|e| e==edge).is_some()
     }
 
+    pub fn to_vertex_list(&self) -> impl Iterator<Item = &VertexId> + '_ {
+        self.vertices.iter()
+    }
+
     pub fn to_edge_list(&self) -> impl Iterator<Item = Edge> + '_ {
         self.vertices
             .windows(2)
