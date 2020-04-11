@@ -2,7 +2,7 @@ use crate::directed_graph::DirectedGraph;
 use crate::graph::{Edge, VertexId};
 ///! Best-First search Iterator with constraint implementation
 use crate::iter::constraint::Constraint;
-use crate::iter::iter_datastructure::{PriorityQueue, SearchQueue};
+use crate::iter::iter_datastructure::{MinPriorityQueue, SearchQueue};
 use crate::path::Path;
 
 use crate::path::ScoredPath;
@@ -14,7 +14,7 @@ pub struct ConstrainedBestFirstIter<'a, F>
 where
     F: Fn(&DirectedGraph, &Path) -> i64,
 {
-    queue: PriorityQueue<ScoredPath>,
+    queue: MinPriorityQueue<ScoredPath>,
     visited: HashSet<VertexId>,
     graph: &'a DirectedGraph,
     scorefn: F,
@@ -70,11 +70,10 @@ pub fn constrained_best_iter_from<F>(
 where
     F: Fn(&DirectedGraph, &Path) -> i64,
 {
+    let path = Path::empty().append(start_vertex);
+    let score = scorefn(graph, &path);
     let mut iter = empty_constrained_best_iter(graph, scorefn, constraints);
-    iter.queue.push(ScoredPath {
-        path: Path::empty().append(start_vertex),
-        score: 1,
-    });
+    iter.queue.push(ScoredPath { path, score });
     iter.visited.insert(start_vertex);
     iter
 }
@@ -89,7 +88,7 @@ where
     F: Fn(&DirectedGraph, &Path) -> i64,
 {
     ConstrainedBestFirstIter {
-        queue: PriorityQueue::<ScoredPath>::new(),
+        queue: MinPriorityQueue::<ScoredPath>::new(),
         visited: HashSet::new(),
         graph: graph,
         scorefn: scorefn,

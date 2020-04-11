@@ -1,6 +1,8 @@
+use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 ///! Generic datastructure interface for graph search algorithm
 use std::collections::LinkedList;
+use std::fmt::Debug;
 
 pub trait SearchQueue<T> {
     fn push(&mut self, elt: T) -> ();
@@ -53,26 +55,49 @@ impl<T> SearchQueue<T> for Queue<T> {
     }
 }
 
-/// PriorityQueue implementation
-pub struct PriorityQueue<T: Ord> {
+/// MaxPriorityQueue implementation
+pub struct MaxPriorityQueue<T: Ord> {
     priority_queue: BinaryHeap<T>,
 }
 
-impl<T: Ord> PriorityQueue<T> {
-    pub fn new<E: Ord>() -> PriorityQueue<E> {
-        PriorityQueue {
+impl<T: Ord> MaxPriorityQueue<T> {
+    pub fn new<E: Ord>() -> MaxPriorityQueue<E> {
+        MaxPriorityQueue {
             priority_queue: BinaryHeap::new(),
         }
     }
 }
 
-impl<T: Ord> SearchQueue<T> for PriorityQueue<T> {
+impl<T: Ord + Debug> SearchQueue<T> for MaxPriorityQueue<T> {
     fn push(&mut self, elt: T) -> () {
         self.priority_queue.push(elt)
     }
 
     fn pop(&mut self) -> Option<T> {
         self.priority_queue.pop()
+    }
+}
+
+/// MinPriorityQueue implementation
+pub struct MinPriorityQueue<T: Ord> {
+    priority_queue: BinaryHeap<Reverse<T>>,
+}
+
+impl<T: Ord> MinPriorityQueue<T> {
+    pub fn new<E: Ord>() -> MinPriorityQueue<E> {
+        MinPriorityQueue {
+            priority_queue: BinaryHeap::<Reverse<E>>::new(),
+        }
+    }
+}
+
+impl<T: Ord + Debug> SearchQueue<T> for MinPriorityQueue<T> {
+    fn push(&mut self, elt: T) -> () {
+        self.priority_queue.push(Reverse(elt))
+    }
+
+    fn pop(&mut self) -> Option<T> {
+        self.priority_queue.pop().map(|Reverse(x)| x)
     }
 }
 
@@ -158,11 +183,11 @@ mod tests {
         assert![queue.pop().is_none()];
     }
 
-    // PriorityQueue
+    // MaxPriorityQueue
 
     #[test]
-    fn priority_queue_should_have_len_zero_when_empty() {
-        let queue: PriorityQueue<usize> = PriorityQueue::<usize>::new();
+    fn max_priority_queue_should_have_len_zero_when_empty() {
+        let queue: MaxPriorityQueue<usize> = MaxPriorityQueue::<usize>::new();
         assert![
             queue.priority_queue.is_empty(),
             "Priority queue should be empty"
@@ -170,8 +195,8 @@ mod tests {
     }
 
     #[test]
-    fn priority_queue_should_store_all_enqueued_entries() {
-        let mut queue: PriorityQueue<usize> = PriorityQueue::<usize>::new();
+    fn max_priority_queue_should_store_all_enqueued_entries() {
+        let mut queue: MaxPriorityQueue<usize> = MaxPriorityQueue::<usize>::new();
         queue.push(1);
         queue.push(1);
         queue.push(2);
@@ -188,8 +213,8 @@ mod tests {
     }
 
     #[test]
-    fn priority_queue_should_pop_entries_in_decreasing_order() {
-        let mut queue: PriorityQueue<usize> = PriorityQueue::<usize>::new();
+    fn max_priority_queue_should_pop_entries_in_decreasing_order() {
+        let mut queue: MaxPriorityQueue<usize> = MaxPriorityQueue::<usize>::new();
         queue.push(2);
         queue.push(1);
         queue.push(3);
@@ -205,9 +230,60 @@ mod tests {
     }
 
     #[test]
-    fn priority_queue_pop_should_return_none_when_empty() {
-        let mut queue: PriorityQueue<usize> = PriorityQueue::<usize>::new();
+    fn max_priority_queue_pop_should_return_none_when_empty() {
+        let mut queue: MaxPriorityQueue<usize> = MaxPriorityQueue::<usize>::new();
         assert![queue.pop().is_none()];
     }
 
+    // MinPriorityQueue
+
+    #[test]
+    fn min_priority_queue_should_have_len_zero_when_empty() {
+        let queue: MinPriorityQueue<usize> = MinPriorityQueue::<usize>::new();
+        assert![
+            queue.priority_queue.is_empty(),
+            "Priority queue should be empty"
+        ];
+    }
+
+    #[test]
+    fn min_priority_queue_should_store_all_enqueued_entries() {
+        let mut queue: MinPriorityQueue<usize> = MinPriorityQueue::<usize>::new();
+        queue.push(1);
+        queue.push(1);
+        queue.push(2);
+        queue.push(3);
+        assert![
+            !queue.priority_queue.is_empty(),
+            "Priority queue should NOT be empty"
+        ];
+        assert_eq![
+            queue.priority_queue.len(),
+            4,
+            "Priority queue size should be 4"
+        ];
+    }
+
+    #[test]
+    fn min_priority_queue_should_pop_entries_in_increasing_order() {
+        let mut queue: MinPriorityQueue<usize> = MinPriorityQueue::<usize>::new();
+        queue.push(2);
+        queue.push(1);
+        queue.push(3);
+        queue.push(1);
+        assert_eq![queue.pop().unwrap(), 1];
+        assert_eq![queue.pop().unwrap(), 1];
+        assert_eq![queue.pop().unwrap(), 2];
+        assert_eq![queue.pop().unwrap(), 3];
+        assert![
+            queue.priority_queue.is_empty(),
+            "Priority queue should be empty"
+        ];
+    }
+
+    #[test]
+    fn min_priority_queue_pop_should_return_none_when_empty() {
+        let mut queue: MinPriorityQueue<usize> = MinPriorityQueue::<usize>::new();
+        assert![queue.pop().is_none()];
+    }
 }

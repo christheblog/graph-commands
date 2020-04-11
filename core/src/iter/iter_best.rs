@@ -1,7 +1,7 @@
 ///! Graph Iterator implementation
 use crate::directed_graph::DirectedGraph;
 use crate::graph::{Edge, VertexId};
-use crate::iter::iter_datastructure::{PriorityQueue, SearchQueue};
+use crate::iter::iter_datastructure::{MinPriorityQueue, SearchQueue};
 use crate::path::Path;
 
 use crate::path::ScoredPath;
@@ -13,7 +13,7 @@ pub struct BestFirstIter<'a, F>
 where
     F: Fn(&DirectedGraph, &Path) -> i64,
 {
-    queue: PriorityQueue<ScoredPath>,
+    queue: MinPriorityQueue<ScoredPath>,
     visited: HashSet<VertexId>,
     graph: &'a DirectedGraph,
     scorefn: F,
@@ -58,11 +58,10 @@ pub fn best_iter_from<F>(
 where
     F: Fn(&DirectedGraph, &Path) -> i64,
 {
+    let path = Path::empty().append(start_vertex);
+    let score = scorefn(&graph, &path);
     let mut iter = empty_best_iter(graph, scorefn);
-    iter.queue.push(ScoredPath {
-        path: Path::empty().append(start_vertex),
-        score: 1,
-    });
+    iter.queue.push(ScoredPath { path, score });
     iter.visited.insert(start_vertex);
     iter
 }
@@ -73,7 +72,7 @@ where
     F: Fn(&DirectedGraph, &Path) -> i64,
 {
     BestFirstIter {
-        queue: PriorityQueue::<ScoredPath>::new(),
+        queue: MinPriorityQueue::<ScoredPath>::new(),
         visited: HashSet::new(),
         graph: graph,
         scorefn: scorefn,
@@ -112,7 +111,7 @@ mod tests {
     }
 
     #[test]
-    fn best_iterator_return_reachable_nodes_in_a_breadth_first_search_order() {
+    fn best_iterator_return_reachable_nodes_in_a_best_first_search_order() {
         fn edge_from(src: u64, end: u64) -> Edge {
             Edge(VertexId(src), VertexId(end))
         }
@@ -143,15 +142,27 @@ mod tests {
                 },
                 ScoredPath {
                     path: Path {
-                        vertices: vec![VertexId(1), VertexId(5)]
+                        vertices: vec![VertexId(1), VertexId(2)]
                     },
-                    score: 5
+                    score: 2
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(2), VertexId(3)]
+                    },
+                    score: 3
                 },
                 ScoredPath {
                     path: Path {
                         vertices: vec![VertexId(1), VertexId(4)]
                     },
                     score: 4
+                },
+                ScoredPath {
+                    path: Path {
+                        vertices: vec![VertexId(1), VertexId(5)]
+                    },
+                    score: 5
                 },
                 ScoredPath {
                     path: Path {
@@ -164,18 +175,6 @@ mod tests {
                         vertices: vec![VertexId(1), VertexId(4), VertexId(6), VertexId(7)]
                     },
                     score: 7
-                },
-                ScoredPath {
-                    path: Path {
-                        vertices: vec![VertexId(1), VertexId(2)]
-                    },
-                    score: 2
-                },
-                ScoredPath {
-                    path: Path {
-                        vertices: vec![VertexId(1), VertexId(2), VertexId(3)]
-                    },
-                    score: 3
                 }
             ],
             "Best order is wrong when starting from Vertex 1"
