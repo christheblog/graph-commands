@@ -7,3 +7,4 @@ pub mod graph_command;
 pub mod iter;
 pub mod path;
 pub mod search;
+pub mod algorithm;
