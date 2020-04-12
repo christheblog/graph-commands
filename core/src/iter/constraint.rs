@@ -6,6 +6,7 @@ use crate::path::ScoredPath;
 type ConstraintRef = Box<Constraint>;
 
 /// Constraints that can be applied to a ScoredPath
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Constraint {
     /// Ensure the path contains the given VertexId
     ContainsVertex(VertexId),

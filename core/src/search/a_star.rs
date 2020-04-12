@@ -49,13 +49,17 @@ where
     G: Fn(&DirectedGraph, &Path) -> i64,
     H: Fn(&DirectedGraph, &Path) -> i64,
 {
+    let all_constraints = constraints.clone();
     iter::iter_best_constraint::constrained_best_iter_from(
         graph,
         |dg, path| g(dg, path) + h(dg, path), // f = g + h
         constraints,
         start,
     )
-    .find(|sp| sp.path.last().map(|x| *x) == Some(end))
+    .find(|sp| {
+        sp.path.last().map(|x| *x) == Some(end) &&
+        all_constraints.iter().all(|c| c.check_complete(sp))
+    })
 }
 
 /// Weight of one per edge

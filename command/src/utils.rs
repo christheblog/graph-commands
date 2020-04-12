@@ -141,6 +141,17 @@ pub fn parse_vertex_id(v: &str) -> Option<u64> {
     v.parse::<u64>().ok()
 }
 
+pub fn parse_vertex_id_list(ids: Vec<&str>) -> Option<Vec<VertexId>> {
+    let mut res = vec![];
+    for id in ids {
+        match parse_vertex_id(id) {
+            Some(id) => res.push(VertexId(id)),
+            None => return None,
+        };
+    }
+    Some(res)
+}
+
 pub fn confirmation_yes_no(msg: &str) -> bool {
     let mut buffer = String::new();
     println!("{}", msg);
