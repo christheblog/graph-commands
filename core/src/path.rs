@@ -1,5 +1,5 @@
-use crate::graph::{Edge, VertexId};
 ///! Graph path implementation
+use crate::graph::{Edge, VertexId};
 use core::cmp::Ordering;
 
 #[derive(PartialEq, Eq, Clone, Hash, Debug)]
@@ -14,7 +14,9 @@ impl Path {
     }
 
     pub fn from(vertices: &Vec<VertexId>) -> Path {
-        Path { vertices: vertices.clone() }
+        Path {
+            vertices: vertices.clone(),
+        }
     }
 
     pub fn is_empty(&self) -> bool {
@@ -30,7 +32,7 @@ impl Path {
     }
 
     pub fn contains_edge(&self, edge: &Edge) -> bool {
-        self.to_edge_list().find(|e| e==edge).is_some()
+        self.to_edge_list().find(|e| e == edge).is_some()
     }
 
     pub fn to_vertex_list(&self) -> impl Iterator<Item = &VertexId> + '_ {
@@ -41,6 +43,18 @@ impl Path {
         self.vertices
             .windows(2)
             .map(|slice| Edge(slice[0], slice[1]))
+    }
+
+    /// Indicates if this path contains a cycle
+    pub fn contains_cycle(&self) -> bool {
+        let mut set = std::collections::HashSet::<&VertexId>::new();
+        for vid in &self.vertices {
+            if set.contains(vid) {
+                return true;
+            }
+            set.insert(vid);
+        }
+        return false;
     }
 
     pub fn last(&self) -> Option<&VertexId> {

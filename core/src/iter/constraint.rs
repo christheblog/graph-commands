@@ -16,6 +16,8 @@ pub enum Constraint {
     /// Note:
     /// All vertices in the OrderedVertices don't have to appear. But if they appear, they do have to be in teh right order
     OrderedVertices(Vec<VertexId>),
+    // Contains a Cycle
+    ContainsCycle,
     /// Ensure the path has a minimum length
     MinLength(usize),
     /// Ensure the path has a maximum length
@@ -46,11 +48,18 @@ impl Constraint {
         match self {
             ContainsVertex(_) | ContainsEdge(_) => true,
             OrderedVertices(ordered) => Constraint::check_vertices_order(&partial.path, ordered),
+            ContainsCycle => true,
             MinLength(_) | MinScore(_) => true,
             MaxLength(len) => partial.path.size() <= *len,
             MaxScore(score) => partial.score <= *score,
-            // Partial Not Can still meet their requirement later if constraint is true => always accept them
-            Not(_) => true,
+            Not(x) => match **x {
+                // Optimisations for partial paths that can be rejected straight away when negated
+                ContainsVertex(vid) => !partial.path.contains_vertex(&vid),
+                ContainsEdge(edge) => !partial.path.contains_edge(&edge),
+                ContainsCycle => !partial.path.contains_cycle(),
+                // "In general", Partial Not can still meet their requirement later if constraint is true => always accept them
+                _ => true,
+            },
             // Or can still be met if constraint 1 OR constraint 2 have still a chance to be met
             Or(c1, c2) => c1.check_partial(partial) || c2.check_partial(partial),
             // And can be met only if both constraints still have a chance to be met
@@ -67,6 +76,7 @@ impl Constraint {
             ContainsVertex(vid) => full.path.contains_vertex(vid),
             ContainsEdge(edge) => full.path.contains_edge(edge),
             OrderedVertices(ordered) => Constraint::check_vertices_order(&full.path, ordered),
+            ContainsCycle => full.path.contains_cycle(),
             MinLength(len) => full.path.size() >= *len,
             MaxLength(len) => full.path.size() <= *len,
             MinScore(score) => full.score >= *score,
@@ -149,6 +159,31 @@ mod tests {
         assert_eq!(
             Constraint::check_partial(
                 &OrderedVertices(vec![VertexId(1), VertexId(5), VertexId(2), VertexId(7)]),
+                &path
+            ),
+            true
+        );
+    }
+
+    // Cycle
+    #[test]
+    fn contains_cycle_should_always_be_true_on_partial_path() {
+        let path = score_of(path_of(vec![1, 2, 3, 4, 5]), 1);
+        assert_eq!(
+            Constraint::check_partial(
+                &ContainsCycle,
+                &path
+            ),
+            true
+        );
+    }
+
+    #[test]
+    fn contains_cycle_should_be_true_on_partial_path_with_an_actual_cycle() {
+        let path = score_of(path_of(vec![1, 2, 3, 4, 5, 2, 7, 8]), 1);
+        assert_eq!(
+            Constraint::check_partial(
+                &ContainsCycle,
                 &path
             ),
             true
@@ -334,6 +369,43 @@ mod tests {
         let path = score_of(path_of(vec![1, 2]), 1);
         let constraint = OrderedVertices(vec![VertexId(2), VertexId(5), VertexId(1)]);
         assert_eq!(Constraint::check_complete(&constraint, &path), false);
+    }
+
+    // Cycle
+    #[test]
+    fn contains_cycle_should_be_false_on_complete_path_without_cycle() {
+        let path = score_of(path_of(vec![1, 2, 3, 4, 5]), 1);
+        assert_eq!(
+            Constraint::check_complete(
+                &ContainsCycle,
+                &path
+            ),
+            false
+        );
+    }
+
+    #[test]
+    fn contains_cycle_should_be_true_on_complete_path_with_one_cycle() {
+        let path = score_of(path_of(vec![1, 2, 3, 4, 5, 2, 7, 8]), 1);
+        assert_eq!(
+            Constraint::check_complete(
+                &ContainsCycle,
+                &path
+            ),
+            true
+        );
+    }
+
+    #[test]
+    fn contains_cycle_should_be_true_on_complete_path_with_more_than_one_cycle() {
+        let path = score_of(path_of(vec![1, 2, 3, 4, 5, 2, 7, 8, 3, 9, 10, 5, 11]), 1);
+        assert_eq!(
+            Constraint::check_complete(
+                &ContainsCycle,
+                &path
+            ),
+            true
+        );
     }
 
     // MinLength

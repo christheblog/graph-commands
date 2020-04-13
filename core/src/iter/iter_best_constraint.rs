@@ -6,7 +6,6 @@ use crate::iter::iter_datastructure::{MinPriorityQueue, SearchQueue};
 use crate::path::Path;
 
 use crate::path::ScoredPath;
-use std::collections::HashSet;
 
 /// Best-First search iterator
 
@@ -15,7 +14,6 @@ where
     F: Fn(&DirectedGraph, &Path) -> i64,
 {
     queue: MinPriorityQueue<ScoredPath>,
-    visited: HashSet<VertexId>,
     graph: &'a DirectedGraph,
     scorefn: F,
     constraints: Vec<Constraint>,
@@ -35,18 +33,15 @@ where
                     .outbound_edges(*vid)
                     .map(|Edge(_, v)| v)
                     .for_each(|v| {
-                        if !self.visited.contains(v) {
-                            self.visited.insert(*v);
-                            let new_path = weighted_path.path.append(*v);
-                            let new_scored_path = ScoredPath {
-                                path: weighted_path.path.append(*v),
-                                score: (self.scorefn)(self.graph, &new_path),
-                            };
-                            // If the newly generated partial path is still a good candidate
-                            // to satisfy all constraints, we put it in the queue
-                            if check_all_partial_constraints(&new_scored_path, &self.constraints) {
-                                self.queue.push(new_scored_path)
-                            }
+                        let new_path = weighted_path.path.append(*v);
+                        let new_scored_path = ScoredPath {
+                            path: weighted_path.path.append(*v),
+                            score: (self.scorefn)(self.graph, &new_path),
+                        };
+                        // If the newly generated partial path is still a good candidate
+                        // to satisfy all constraints, we put it in the queue
+                        if check_all_partial_constraints(&new_scored_path, &self.constraints) {
+                            self.queue.push(new_scored_path)
                         }
                     });
                 Some(weighted_path)
@@ -74,7 +69,6 @@ where
     let score = scorefn(graph, &path);
     let mut iter = empty_constrained_best_iter(graph, scorefn, constraints);
     iter.queue.push(ScoredPath { path, score });
-    iter.visited.insert(start_vertex);
     iter
 }
 
@@ -89,7 +83,6 @@ where
 {
     ConstrainedBestFirstIter {
         queue: MinPriorityQueue::<ScoredPath>::new(),
-        visited: HashSet::new(),
         graph: graph,
         scorefn: scorefn,
         constraints: constraints,

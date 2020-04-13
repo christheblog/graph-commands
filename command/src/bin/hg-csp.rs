@@ -64,6 +64,20 @@ fn main() {
                 .min_values(2),
         )
         .arg(
+            Arg::with_name("include-cycle")
+                .long("include-cycle")
+                .help("Must include at least a cycle")
+                .required(false)
+                .takes_value(false),
+        )
+        .arg(
+            Arg::with_name("no-cycle")
+                .long("no-cycle")
+                .help("Must not include any cycle")
+                .required(false)
+                .takes_value(false),
+        )
+        .arg(
             Arg::with_name("min-length")
                 .long("min-length")
                 .help("Minimum number of vertices to be included")
@@ -147,6 +161,12 @@ fn main() {
         .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
         .map(build_constraint_ordered);
 
+    let include_cycle = option_of(args.is_present("include-cycle"),
+        || build_constraint_include_cycle());
+
+    let no_cycle = option_of(args.is_present("no-cycle"),
+        || build_constraint_no_cycle());
+
     let min_length = args
         .value_of("min-length")
         .and_then(|x| x.parse::<usize>().ok())
@@ -177,12 +197,15 @@ fn main() {
         .and_then(|x| x.parse::<i64>().ok())
         .map(build_constraint_exact_score);
 
+
     let graph = utils::load_graph(path).expect("Couldn't load graph");
 
     let constraints = build_all_constraints(
         include,
         exclude,
         ordered,
+        include_cycle,
+        no_cycle,
         min_length,
         max_length,
         exact_length,
@@ -239,6 +262,8 @@ fn build_all_constraints(
     constraint_include: Option<Vec<Constraint>>,
     constraint_exclude: Option<Vec<Constraint>>,
     constraint_ordered: Option<Constraint>,
+    constraint_include_cycle: Option<Constraint>,
+    constraint_no_cycle: Option<Constraint>,
     constraint_min_length: Option<Constraint>,
     constraint_max_length: Option<Constraint>,
     constraint_exact_length: Option<Vec<Constraint>>,
@@ -255,6 +280,12 @@ fn build_all_constraints(
         constraints.push(c);
     }
     for c in constraint_ordered {
+        constraints.push(c);
+    }
+    for c in constraint_include_cycle {
+        constraints.push(c);
+    }
+    for c in constraint_no_cycle {
         constraints.push(c);
     }
     for c in constraint_min_length {
@@ -292,6 +323,14 @@ fn build_constraint_ordered(ids: Vec<VertexId>) -> Constraint {
     OrderedVertices(ids)
 }
 
+fn build_constraint_include_cycle() -> Constraint {
+    ContainsCycle
+}
+
+fn build_constraint_no_cycle() -> Constraint {
+    Not(Box::new(ContainsCycle))
+}
+
 fn build_constraint_min_length(len: usize) -> Constraint {
     MinLength(len)
 }
@@ -314,4 +353,14 @@ fn build_constraint_max_score(score: i64) -> Constraint {
 
 fn build_constraint_exact_score(score: i64) -> Vec<Constraint> {
     vec![MinScore(score), MinScore(score)]
+}
+
+// Helpers
+
+fn option_of<T,Thunk>(flag: bool, thunk: Thunk) -> Option<T>
+where Thunk: FnOnce() -> T {
+    match flag {
+        false => None,
+        true => Some(thunk())
+    }
 }
