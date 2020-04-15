@@ -3,8 +3,8 @@ use hg_command::utils;
 use hg_command::version;
 use hg_core::directed_graph::DirectedGraph;
 use hg_core::graph::VertexId;
-use hg_core::iter::constraint::Constraint;
-use hg_core::iter::constraint::Constraint::*;
+use hg_core::constraint::constraint::Constraint;
+use hg_core::constraint::constraint::Constraint::*;
 use hg_core::path::ScoredPath;
 
 fn main() {
@@ -352,7 +352,7 @@ fn build_constraint_max_score(score: i64) -> Constraint {
 }
 
 fn build_constraint_exact_score(score: i64) -> Vec<Constraint> {
-    vec![MinScore(score), MinScore(score)]
+    vec![MinScore(score), MaxScore(score)]
 }
 
 // Helpers

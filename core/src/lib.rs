@@ -1,5 +1,7 @@
+pub mod algorithm;
 pub mod attribute_command;
 pub mod attribute_repo;
+pub mod constraint;
 pub mod directed_graph;
 pub mod format;
 pub mod graph;
@@ -7,4 +9,3 @@ pub mod graph_command;
 pub mod iter;
 pub mod path;
 pub mod search;
-pub mod algorithm;

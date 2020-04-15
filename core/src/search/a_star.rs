@@ -1,7 +1,7 @@
 use crate::directed_graph::DirectedGraph;
 use crate::graph::VertexId;
 use crate::iter;
-use crate::iter::constraint::Constraint;
+use crate::constraint::constraint::Constraint;
 use crate::path::Path;
 use crate::path::ScoredPath;
 
