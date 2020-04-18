@@ -293,7 +293,6 @@ mod tests {
         )
     }
 
-
     // Helpers
     fn vertex(v: u64) -> VertexId {
         VertexId(v)

@@ -159,8 +159,8 @@ mod tests {
     #[test]
     fn topological_order_on_a_graph_with_a_cycle_is_empty_3() {
         let mut g = DirectedGraph::new();
-        // contains 3 cycles :
-        // 1->3->6->1, 3->5->5->6->3, 1->3->4->5->6->1
+        // contains 2 cycles :
+        // 3->4->5->6->3, 1->3->4->5->6->1
         g.add_edge(edge(1, 3));
         g.add_edge(edge(3, 4));
         g.add_edge(edge(4, 7));

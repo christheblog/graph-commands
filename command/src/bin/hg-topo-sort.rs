@@ -5,7 +5,7 @@ use hg_core::algorithm::topo_sort;
 
 
 fn main() {
-    let args = App::new("hg-top-sort")
+    let args = App::new("hg-topo-sort")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Compute a topological order of a directed graph")

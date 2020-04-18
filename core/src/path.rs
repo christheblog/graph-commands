@@ -27,6 +27,14 @@ impl Path {
         self.vertices.len()
     }
 
+    pub fn first(&self) -> Option<&VertexId> {
+        self.vertices.first()
+    }
+
+    pub fn last(&self) -> Option<&VertexId> {
+        self.vertices.last()
+    }
+
     pub fn contains_vertex(&self, vertex: &VertexId) -> bool {
         self.vertices.contains(vertex)
     }
@@ -55,10 +63,6 @@ impl Path {
             set.insert(vid);
         }
         return false;
-    }
-
-    pub fn last(&self) -> Option<&VertexId> {
-        self.vertices.last()
     }
 
     /// Append a vertex to a path
