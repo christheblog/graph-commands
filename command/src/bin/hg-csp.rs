@@ -1,10 +1,10 @@
 use clap::{App, Arg};
 use hg_command::utils;
+use hg_command::arg_utils;
 use hg_command::version;
 use hg_core::directed_graph::DirectedGraph;
 use hg_core::graph::VertexId;
 use hg_core::constraint::constraint::Constraint;
-use hg_core::constraint::constraint::Constraint::*;
 use hg_core::path::ScoredPath;
 
 fn main() {
@@ -149,53 +149,53 @@ fn main() {
     let include = args
         .values_of("include")
         .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
-        .map(build_constraint_include);
+        .map(arg_utils::build_constraint_include);
 
     let exclude = args
         .values_of("exclude")
         .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
-        .map(build_constraint_exclude);
+        .map(arg_utils::build_constraint_exclude);
 
     let ordered = args
         .values_of("ordered")
         .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
-        .map(build_constraint_ordered);
+        .map(arg_utils::build_constraint_ordered);
 
-    let include_cycle = option_of(args.is_present("include-cycle"),
-        || build_constraint_include_cycle());
+    let include_cycle = arg_utils::option_of(args.is_present("include-cycle"),
+        || arg_utils::build_constraint_include_cycle());
 
-    let no_cycle = option_of(args.is_present("no-cycle"),
-        || build_constraint_no_cycle());
+    let no_cycle = arg_utils::option_of(args.is_present("no-cycle"),
+        || arg_utils::build_constraint_no_cycle());
 
     let min_length = args
         .value_of("min-length")
         .and_then(|x| x.parse::<usize>().ok())
-        .map(build_constraint_min_length);
+        .map(arg_utils::build_constraint_min_length);
 
     let max_length = args
         .value_of("max-length")
         .and_then(|x| x.parse::<usize>().ok())
-        .map(build_constraint_max_length);
+        .map(arg_utils::build_constraint_max_length);
 
     let exact_length = args
         .value_of("exact-length")
         .and_then(|x| x.parse::<usize>().ok())
-        .map(build_constraint_exact_length);
+        .map(arg_utils::build_constraint_exact_length);
 
     let min_score = args
         .value_of("min-score")
         .and_then(|x| x.parse::<i64>().ok())
-        .map(build_constraint_min_score);
+        .map(arg_utils::build_constraint_min_score);
 
     let max_score = args
         .value_of("max-score")
         .and_then(|x| x.parse::<i64>().ok())
-        .map(build_constraint_max_score);
+        .map(arg_utils::build_constraint_max_score);
 
     let exact_score = args
         .value_of("exact-score")
         .and_then(|x| x.parse::<i64>().ok())
-        .map(build_constraint_exact_score);
+        .map(arg_utils::build_constraint_exact_score);
 
 
     let graph = utils::load_graph(path).expect("Couldn't load graph");
@@ -307,60 +307,4 @@ fn build_all_constraints(
         constraints.push(c);
     }
     constraints
-}
-
-fn build_constraint_include(ids: Vec<VertexId>) -> Vec<Constraint> {
-    ids.iter().map(|c| ContainsVertex(*c)).collect()
-}
-
-fn build_constraint_exclude(ids: Vec<VertexId>) -> Vec<Constraint> {
-    ids.iter()
-        .map(|c| Not(Box::new(ContainsVertex(*c))))
-        .collect()
-}
-
-fn build_constraint_ordered(ids: Vec<VertexId>) -> Constraint {
-    OrderedVertices(ids)
-}
-
-fn build_constraint_include_cycle() -> Constraint {
-    ContainsCycle
-}
-
-fn build_constraint_no_cycle() -> Constraint {
-    Not(Box::new(ContainsCycle))
-}
-
-fn build_constraint_min_length(len: usize) -> Constraint {
-    MinLength(len)
-}
-
-fn build_constraint_max_length(len: usize) -> Constraint {
-    MaxLength(len)
-}
-
-fn build_constraint_exact_length(len: usize) -> Vec<Constraint> {
-    vec![MinLength(len), MaxLength(len)]
-}
-
-fn build_constraint_min_score(score: i64) -> Constraint {
-    MinScore(score)
-}
-
-fn build_constraint_max_score(score: i64) -> Constraint {
-    MinScore(score)
-}
-
-fn build_constraint_exact_score(score: i64) -> Vec<Constraint> {
-    vec![MinScore(score), MaxScore(score)]
-}
-
-// Helpers
-
-fn option_of<T,Thunk>(flag: bool, thunk: Thunk) -> Option<T>
-where Thunk: FnOnce() -> T {
-    match flag {
-        false => None,
-        true => Some(thunk())
-    }
 }
