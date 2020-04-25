@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::graph_utils;
 use hg_command::version;
 use hg_core::graph::VertexId;
 
@@ -20,7 +20,7 @@ fn main() {
         .get_matches();
 
     let path = args.value_of("path").unwrap();
-    let graph = utils::load_graph(path).expect(&format!["Couldn't load graph at '{}'", path]);
+    let graph = graph_utils::load_graph(path).expect(&format!["Couldn't load graph at '{}'", path]);
 
     println!("Path: {}", path);
     println!("Vertices: {}", graph.vertex_count());

@@ -1,5 +1,6 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::arg_utils;
+use hg_command::graph_utils;
 use hg_command::version;
 use hg_core::graph::VertexId;
 
@@ -89,37 +90,42 @@ fn main() {
     args.values_of("vertex")
         .map(|vids| vids.map(|v| v.parse::<u64>().expect("Invalid vertex id")))
         .map(|vids| vids.map(|vid| VertexId(vid)).collect())
-        .map(|vids| utils::add_vertices(path, vids));
+        .map(|vids| graph_utils::add_vertices(path, vids));
 
     args.values_of("edge")
         .map(|vids| vids.map(|v| v.parse::<u64>().expect("Invalid vertex id")))
         .map(|vids| vids.map(|vid| VertexId(vid)).collect())
-        .map(|vids| utils::as_vertex_tuple(vids).expect("Invalid number of vertices. Must be an even number"))
+        .map(|vids| {
+            arg_utils::as_vertex_tuple(vids)
+                .expect("Invalid number of vertices. Must be an even number")
+        })
         .map(|vids| reverse_if_needed(reverse_edges, vids))
-        .map(|vids| utils::add_edges(path, vids));
+        .map(|vids| graph_utils::add_edges(path, vids));
 
     args.values_of("chain")
         .map(|vids| vids.map(|v| v.parse::<u64>().expect("Invalid vertex id")))
         .map(|vids| chain_from_vertices(vids.map(|vid| VertexId(vid)).collect()))
         .map(|vids| reverse_if_needed(reverse_edges, vids))
-        .map(|vids| utils::add_edges(path, vids));
+        .map(|vids| graph_utils::add_edges(path, vids));
 
     args.values_of("cycle")
         .map(|vids| vids.map(|v| v.parse::<u64>().expect("Invalid vertex id")))
-        .map(|vids| cycle_from_vertices(vids.map(|vid| VertexId(vid)).collect()).expect("Invalid cycle"))
+        .map(|vids| {
+            cycle_from_vertices(vids.map(|vid| VertexId(vid)).collect()).expect("Invalid cycle")
+        })
         .map(|vids| reverse_if_needed(reverse_edges, vids))
-        .map(|vids| utils::add_edges(path, vids));
+        .map(|vids| graph_utils::add_edges(path, vids));
 
     args.values_of("star")
         .map(|vids| vids.map(|v| v.parse::<u64>().expect("Invalid vertex id")))
         .map(|vids| star_from_vertices(vids.map(|vid| VertexId(vid)).collect()))
         .map(|vids| reverse_if_needed(reverse_edges, vids))
-        .map(|vids| utils::add_edges(path, vids));
+        .map(|vids| graph_utils::add_edges(path, vids));
 
     args.values_of("clique")
         .map(|vids| vids.map(|v| v.parse::<u64>().expect("Invalid vertex id")))
         .map(|vids| clique_from_vertices(vids.map(|vid| VertexId(vid)).collect()))
-        .map(|vids| utils::add_edges(path, vids));
+        .map(|vids| graph_utils::add_edges(path, vids));
 }
 
 fn chain_from_vertices(vertices: Vec<VertexId>) -> Vec<(VertexId, VertexId)> {
@@ -149,7 +155,7 @@ fn clique_from_vertices(vertices: Vec<VertexId>) -> Vec<(VertexId, VertexId)> {
     let mut result = vec![];
     for i in 0..vertices.len() {
         for j in 0..vertices.len() {
-            if i!= j {
+            if i != j {
                 result.push((vertices[i], vertices[j]));
             }
         }
@@ -157,11 +163,13 @@ fn clique_from_vertices(vertices: Vec<VertexId>) -> Vec<(VertexId, VertexId)> {
     result
 }
 
-fn reverse_if_needed(should_reverse: bool, vertices: Vec<(VertexId, VertexId)>) -> Vec<(VertexId, VertexId)> {
+fn reverse_if_needed(
+    should_reverse: bool,
+    vertices: Vec<(VertexId, VertexId)>,
+) -> Vec<(VertexId, VertexId)> {
     if should_reverse {
-        vertices.iter().map(|(src,dest)| (*dest, *src)).collect()
+        vertices.iter().map(|(src, dest)| (*dest, *src)).collect()
     } else {
         vertices
     }
-
 }

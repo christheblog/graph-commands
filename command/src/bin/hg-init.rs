@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::graph_utils;
 use hg_command::version;
 
 fn main() {
@@ -20,5 +20,5 @@ fn main() {
 
     // Reading arguments
     let path = args.value_of("path").or_else(|| Some(".")).unwrap();
-    utils::init(path).expect("Couldn't create graph directory structure");
+    graph_utils::init(path).expect("Couldn't create graph directory structure");
 }

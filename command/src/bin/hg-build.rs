@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::graph_utils;
 use hg_command::version;
 
 fn main() {
@@ -31,13 +31,13 @@ fn main() {
     let path = args.value_of("path").unwrap();
     let verbose = args.is_present("verbose");
 
-    let graph = utils::load_graph(path).expect("Couldn't load graph");
+    let graph = graph_utils::load_graph(path).expect("Couldn't load graph");
     if verbose {
         println!("Vertices: {}", graph.vertex_count());
         println!("Edges: {}", graph.edge_count());
     }
 
-    utils::save_graph_as_commands(path, &graph)
+    graph_utils::save_graph_as_commands(path, &graph)
         .expect("Couldn't save graph. Data maybe lost !");
 
     println!("Done.")

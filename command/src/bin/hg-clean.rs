@@ -1,5 +1,6 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::arg_utils;
+use hg_command::graph_utils;
 use hg_command::version;
 
 fn main() {
@@ -41,7 +42,7 @@ fn main() {
     let silent = args.is_present("silent");
 
     if !force {
-        let yes_no = utils::confirmation_yes_no(&format!("Are you sure you want to clean graph at '{}' ? (yes/no)", path));
+        let yes_no = arg_utils::confirmation_yes_no(&format!("Are you sure you want to clean graph at '{}' ? (yes/no)", path));
         if !yes_no {
             println!("Aborting.");
             return ();
@@ -51,7 +52,7 @@ fn main() {
     if !silent {
         println!("Cleaning graph under '{}' ...", path);
     }
-    utils::clean(path).expect(&format![
+    graph_utils::clean(path).expect(&format![
         "A problem occured. Path '{}' might not exist, or the graph is currently lock (check 'lock' file)",
         path
     ]);

@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::graph_utils;
 use hg_command::arg_utils;
 use hg_command::version;
 use hg_core::directed_graph::DirectedGraph;
@@ -137,28 +137,28 @@ fn main() {
 
     let start_vertex = args
         .value_of("start")
-        .and_then(utils::parse_vertex_id)
+        .and_then(arg_utils::parse_vertex_id)
         .map(|id| VertexId(id))
         .unwrap();
     let end_vertex = args
         .value_of("end")
-        .and_then(utils::parse_vertex_id)
+        .and_then(arg_utils::parse_vertex_id)
         .map(|id| VertexId(id))
         .unwrap();
 
     let include = args
         .values_of("include")
-        .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
+        .and_then(|ids| arg_utils::parse_vertex_id_list(ids.collect()))
         .map(arg_utils::build_constraint_include);
 
     let exclude = args
         .values_of("exclude")
-        .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
+        .and_then(|ids| arg_utils::parse_vertex_id_list(ids.collect()))
         .map(arg_utils::build_constraint_exclude);
 
     let ordered = args
         .values_of("ordered")
-        .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
+        .and_then(|ids| arg_utils::parse_vertex_id_list(ids.collect()))
         .map(arg_utils::build_constraint_ordered);
 
     let include_cycle = arg_utils::option_of(args.is_present("include-cycle"),
@@ -198,7 +198,7 @@ fn main() {
         .map(arg_utils::build_constraint_exact_score);
 
 
-    let graph = utils::load_graph(path).expect("Couldn't load graph");
+    let graph = graph_utils::load_graph(path).expect("Couldn't load graph");
 
     let constraints = build_all_constraints(
         include,

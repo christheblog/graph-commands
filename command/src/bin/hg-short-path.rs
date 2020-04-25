@@ -1,5 +1,6 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::arg_utils;
+use hg_command::graph_utils;
 use hg_command::version;
 use hg_core::directed_graph::DirectedGraph;
 use hg_core::graph::VertexId;
@@ -43,15 +44,15 @@ fn main() {
 
     let start_vertex = args
         .value_of("start")
-        .and_then(utils::parse_vertex_id)
+        .and_then(arg_utils::parse_vertex_id)
         .map(|id| VertexId(id))
         .unwrap();
     let end_vertex = args
         .value_of("end")
-        .and_then(utils::parse_vertex_id)
+        .and_then(arg_utils::parse_vertex_id)
         .map(|id| VertexId(id))
         .unwrap();
-    let graph = utils::load_graph(path).expect("Couldn't load graph");
+    let graph = graph_utils::load_graph(path).expect("Couldn't load graph");
 
     match shortest_path(&graph, start_vertex, end_vertex) {
         Some(ScoredPath {

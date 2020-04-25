@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use hg_command::utils;
+use hg_command::graph_utils;
 use hg_command::version;
 use hg_core::algorithm::topo_sort;
 
@@ -22,7 +22,7 @@ fn main() {
 
     let path = args.value_of("path").unwrap();
 
-    let graph = utils::load_graph(path).expect("Couldn't load graph");
+    let graph = graph_utils::load_graph(path).expect("Couldn't load graph");
 
     match topo_sort::topological_sort(&graph) {
         Some(vertices) => {

@@ -1,13 +1,15 @@
 use clap::{App, Arg, ArgGroup};
 use hg_command::arg_utils;
-use hg_command::utils;
+use hg_command::graph_utils;
 use hg_command::version;
 use hg_core::algorithm::cycle;
 use hg_core::constraint::constraint::Constraint;
+use hg_core::directed_graph::DirectedGraph;
 use hg_core::graph::VertexId;
 use hg_core::iter::iter_cycle;
 use hg_core::iter::iter_cycle::Cycle;
 use hg_core::path;
+use std::convert::TryInto;
 
 fn main() {
     let args = App::new("hg-cycle")
@@ -28,7 +30,7 @@ fn main() {
             Arg::with_name("girth")
                 .long("girth")
                 .short("g")
-                .help("Compute the length of the shortest cycle of the graph")
+                .help("Compute the length of the shortest cycle of the graph. Doesn't allow to specify constraints")
                 .required(false)
                 .takes_value(false),
         )
@@ -36,7 +38,7 @@ fn main() {
             Arg::with_name("count")
                 .long("count")
                 .short("c")
-                .help("Count the number of cycles form the graph")
+                .help("Count the number of cycles matching teh constraints")
                 .required(false)
                 .takes_value(false),
         )
@@ -88,7 +90,6 @@ fn main() {
         .arg(
             Arg::with_name("min-length")
                 .long("min-length")
-                .short("m")
                 .help("Return all the cycles from the graph with a length greater than or equal to min-length")
                 .required(false)
                 .takes_value(true),
@@ -96,7 +97,6 @@ fn main() {
         .arg(
             Arg::with_name("max-length")
                 .long("max-length")
-                .short("M")
                 .help("Return all the cycles from the graph with a length less than or equal to max-length")
                 .required(false)
                 .takes_value(true),
@@ -104,7 +104,27 @@ fn main() {
         .arg(
             Arg::with_name("exact-length")
                 .long("exact-length")
-                .short("e")
+                .help("Return all the cycles from the graph with the provided length")
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("min-score")
+                .long("min-score")
+                .help("Return all the cycles from the graph with a score greater than or equal to min-score")
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("max-score")
+                .long("max-score")
+                .help("Return all the cycles from the graph with a length less than or equal to max-score")
+                .required(false)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("exact-score")
+                .long("exact-score")
                 .help("Return all the cycles from the graph with the provided length")
                 .required(false)
                 .takes_value(true),
@@ -117,23 +137,9 @@ fn main() {
                 .takes_value(true),
         )
         .arg(
-            Arg::with_name("include-some-of")
-                .long("include-some-of")
-                .help("Return all the cycles from the graph that are including at least one of the provided vertices")
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
             Arg::with_name("exclude-all")
                 .long("exclude-all")
                 .help("Return all the cycles from the graph that not including any of the provided vertices")
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
-            Arg::with_name("exclude-some-of")
-                .long("exclude-some-of")
-                .help("Return all the cycles from the graph that are not including at least one of the provided vertices")
                 .required(false)
                 .takes_value(true),
         )
@@ -145,32 +151,17 @@ fn main() {
                 .takes_value(true),
         )
         .arg(
-            Arg::with_name("include-some-edges")
-                .long("include-some-edges")
-                .help("Return all the cycles from the graph that are including at least one of the provided edges")
-                .required(false)
-                .takes_value(true),
-        )
-        .arg(
             Arg::with_name("exclude-all-edges")
                 .long("exclude-all-edges")
                 .help("Return all the cycles from the graph that not including any of the provided edges")
                 .required(false)
                 .takes_value(true),
         )
-        .arg(
-            Arg::with_name("exclude-some-edges")
-                .long("exclude-some-edges")
-                .help("Return all the cycles from the graph that are not including at least one of the provided edges")
-                .required(false)
-                .takes_value(true),
-        )
-
         .get_matches();
 
     let path = args.value_of("path").unwrap();
 
-    let graph = utils::load_graph(path).expect("Couldn't load graph");
+    let graph = graph_utils::load_graph(path).expect("Couldn't load graph");
 
     let girth = args.is_present("girth");
     // Action
@@ -187,20 +178,20 @@ fn main() {
     // Constraints
     let include_all = args
         .values_of("include-all")
-        .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
+        .and_then(|ids| arg_utils::parse_vertex_id_list(ids.collect()))
         .map(arg_utils::build_constraint_include);
     let exclude_all = args
         .values_of("exclude-all")
-        .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
+        .and_then(|ids| arg_utils::parse_vertex_id_list(ids.collect()))
         .map(arg_utils::build_constraint_exclude);
     let include_all_edges = args
         .values_of("include-all-edges")
-        .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
-        .map(arg_utils::build_constraint_include);
+        .and_then(|ids| arg_utils::parse_edge_list(ids.collect()))
+        .map(arg_utils::build_constraint_include_edges);
     let exclude_all_edges = args
         .values_of("exclude-all-edges")
-        .and_then(|ids| utils::parse_vertex_id_list(ids.collect()))
-        .map(arg_utils::build_constraint_exclude);
+        .and_then(|ids| arg_utils::parse_edge_list(ids.collect()))
+        .map(arg_utils::build_constraint_exclude_edges);
     let min_length = args
         .value_of("min-length")
         .and_then(|x| x.parse::<usize>().ok())
@@ -240,7 +231,14 @@ fn main() {
     );
 
     // Iterates on cycles, using the constraints to filter candidates
-    let iterator = iter_cycle::cycle_iter(&graph).filter(|c| check(c, &constraints));
+    let iterator = iter_cycle::cycle_iter(&graph).filter(|cycle| {
+        check(
+            &graph,
+            cycle,
+            &constraints,
+            |_: &DirectedGraph, path: &path::Path| path.size().try_into().unwrap(),
+        )
+    });
 
     if girth {
         println!("girth: {}", format_girth(cycle::girth(&graph)));
@@ -314,11 +312,13 @@ fn build_all_constraints(
     constraints
 }
 
-fn check(cycle: &Cycle, constraints: &Vec<Constraint>) -> bool {
-    let scored_path = path::ScoredPath {
-        path: cycle.as_path(),
-        score: 0,
-    };
+fn check<F>(graph: &DirectedGraph, cycle: &Cycle, constraints: &Vec<Constraint>, scorefn: F) -> bool
+where
+    F: Fn(&DirectedGraph, &path::Path) -> i64,
+{
+    let path = cycle.as_path();
+    let score = scorefn(graph, &path);
+    let scored_path = path::ScoredPath { path, score };
     constraints.iter().all(|c| c.check_complete(&scored_path))
 }
 
@@ -328,13 +328,6 @@ fn format_girth(g: Option<usize>) -> String {
     match g {
         Some(0) | None => "Infinity".to_string(),
         Some(n) => n.to_string(),
-    }
-}
-
-fn format_cycle_length(g: Option<usize>) -> String {
-    match g {
-        Some(n) => n.to_string(),
-        None => "N/A".to_string(),
     }
 }
 

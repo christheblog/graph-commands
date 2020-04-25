@@ -1,6 +1,6 @@
 //! Collection of useful functions for command-line tools
 
-use hg_core::graph::VertexId;
+use hg_core::graph::{Edge, VertexId};
 use hg_core::graph_command::GraphCommand;
 use hg_core::graph_command::GraphCommand::AddEdge;
 use hg_core::graph_command::GraphCommand::AddVertex;
@@ -63,7 +63,13 @@ fn load_graph_from_path(filepath: &path::Path) -> Result<DirectedGraph, String> 
 
 pub fn save_graph_as_commands(filepath: &str, graph: &DirectedGraph) -> io::Result<()> {
     let command_path = command_path(filepath);
-    gcmd::save(graph, command_path.as_ref().to_str().expect("Invalid path. (UTF-9 ?)"))
+    gcmd::save(
+        graph,
+        command_path
+            .as_ref()
+            .to_str()
+            .expect("Invalid path. (UTF-9 ?)"),
+    )
 }
 
 /// Cleans-up the graph directory structure
@@ -122,45 +128,6 @@ pub fn remove_edges(root_dir: &str, edges: Vec<(VertexId, VertexId)>) -> std::io
             .map(|(src, dest)| RemoveEdge(*src, *dest))
             .collect(),
     )
-}
-
-/// Groups a list of vertices 2 by 2 to produce edges
-pub fn as_vertex_tuple(vids: Vec<VertexId>) -> Option<Vec<(VertexId, VertexId)>> {
-    if vids.len() % 2 == 0 {
-        let mut res = vec![];
-        for i in (0..vids.len()).step_by(2) {
-            res.push((vids[i], vids[i+1]));
-        }
-        Some(res)
-    } else {
-        None
-    }
-}
-
-pub fn parse_vertex_id(v: &str) -> Option<u64> {
-    v.parse::<u64>().ok()
-}
-
-pub fn parse_vertex_id_list(ids: Vec<&str>) -> Option<Vec<VertexId>> {
-    let mut res = vec![];
-    for id in ids {
-        match parse_vertex_id(id) {
-            Some(id) => res.push(VertexId(id)),
-            None => return None,
-        };
-    }
-    Some(res)
-}
-
-pub fn confirmation_yes_no(msg: &str) -> bool {
-    let mut buffer = String::new();
-    println!("{}", msg);
-    std::io::stdin().read_line(&mut buffer)
-        .expect("Invalid UTF-8 bytes");
-    match buffer.to_string().trim().as_ref() {
-        "yes" | "y" => true,
-        "no" | _ => false,
-    }
 }
 
 /// Helpers
