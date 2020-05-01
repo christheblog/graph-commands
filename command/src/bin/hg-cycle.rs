@@ -29,8 +29,14 @@ fn main() {
         .arg(
             Arg::with_name("girth")
                 .long("girth")
-                .short("g")
                 .help("Compute the length of the shortest cycle of the graph. Doesn't allow to specify constraints")
+                .required(false)
+                .takes_value(false),
+        )
+        .arg(
+            Arg::with_name("hamiltonian")
+                .long("hamiltonian")
+                .help("Find a hamiltonian cycle of the graph. Doesn't allow to specify constraints")
                 .required(false)
                 .takes_value(false),
         )
@@ -84,7 +90,7 @@ fn main() {
         )
         .group(
             ArgGroup::with_name("actions")
-                .args(&["girth","count", "head", "take-n", "all", "shortest", "longest"])
+                .args(&["girth","hamiltonian", "count", "head", "take-n", "all", "shortest", "longest"])
                 .required(true))
         // Constraints on the cycle
         .arg(
@@ -164,6 +170,7 @@ fn main() {
     let graph = graph_utils::load_graph(path).expect("Couldn't load graph");
 
     let girth = args.is_present("girth");
+    let hamiltonian = args.is_present("hamiltonian");
     // Action
     let count = args.is_present("count");
     let shortest = args.is_present("shortest");
@@ -242,7 +249,9 @@ fn main() {
 
     if girth {
         println!("girth: {}", format_girth(cycle::girth(&graph)));
-    } else if count {
+    }  else if hamiltonian {
+            println!("hamiltonian: {}", format_cycle_opt(cycle::hamiltonian(&graph).as_ref()));
+    }  else if count {
         println!("count: {}", iterator.count());
     } else if shortest {
         println!(
