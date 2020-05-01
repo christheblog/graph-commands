@@ -38,7 +38,7 @@ pub fn topological_sort(graph: &DirectedGraph) -> Option<Vec<VertexId>> {
     }
 }
 
-// Finds a start a node with no inbound edges
+// Finds start nodes (ie with no inbound edges)
 fn find_start_vertices(graph: &DirectedGraph) -> impl Iterator<Item = VertexId> + '_ {
     graph
         .vertices()
