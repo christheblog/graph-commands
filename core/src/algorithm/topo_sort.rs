@@ -4,9 +4,31 @@ use crate::graph::VertexId;
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
+
+// DAG Marker
+
+pub struct DAG<'a> {
+    graph: &'a DirectedGraph
+}
+
+impl<'a> DAG<'a> {
+    pub fn as_graph(&'a self) -> &'a DirectedGraph {
+        self.graph
+    }
+}
+
 /// Tests if te graph is a Directed Acyclic Graph (DAG)
 pub fn is_dag(graph: &DirectedGraph) -> bool {
     topological_sort(graph).is_some()
+}
+
+/// Mark a graph as Dag if it is a DAG
+pub fn try_dag(graph: &DirectedGraph) -> Option<DAG> {
+    if is_dag(graph) {
+        Some(DAG { graph })
+    } else {
+        None
+    }
 }
 
 /// Computes a topological order for a Graph
