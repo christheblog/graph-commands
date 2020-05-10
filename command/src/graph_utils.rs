@@ -1,6 +1,6 @@
 //! Collection of useful functions for command-line tools
 
-use hg_core::graph::{Edge, VertexId};
+use hg_core::graph::VertexId;
 use hg_core::graph_command::GraphCommand;
 use hg_core::graph_command::GraphCommand::AddEdge;
 use hg_core::graph_command::GraphCommand::AddVertex;

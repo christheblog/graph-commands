@@ -1,8 +1,8 @@
 use crate::algorithm::shortest_path::dag_shortest_paths;
 use crate::algorithm::topo_sort::DAG;
-use crate::directed_graph::DirectedGraph;
+
 use crate::graph::{Edge, VertexId};
-use crate::path::{Path, ScoredPath};
+use crate::path::ScoredPath;
 use std::collections::hash_map::HashMap;
 
 /// Finds the longest path from a source to a target vertex in a DAG
@@ -39,10 +39,12 @@ fn negate_scores(mut scores: HashMap<VertexId, ScoredPath>) -> HashMap<VertexId,
 mod tests {
     use super::*;
     use crate::algorithm::topo_sort;
+    use crate::directed_graph::DirectedGraph;
+    use crate::path::Path;
 
     #[test]
     fn dag_longest_path_should_find_the_longest_path_in_a_dag() {
-        let (g, scorefn) = build_test_weighted_graph();
+        let (g, scorefn) = build_test_weighted_dag();
         let shortest_path = dag_longest_path(
             topo_sort::try_dag(&g).unwrap(),
             scorefn,
@@ -54,7 +56,7 @@ mod tests {
 
     #[test]
     fn dag_longest_paths_should_find_all_longest_paths_from_source_vertex_in_a_dag() {
-        let (g, scorefn) = build_test_weighted_graph();
+        let (g, scorefn) = build_test_weighted_dag();
 
         let all_longest_paths_from_1 =
             dag_longest_paths(topo_sort::try_dag(&g).unwrap(), scorefn, VertexId(1));
@@ -97,7 +99,7 @@ mod tests {
     // Helpers
 
     // Graph taken from https://www.youtube.com/watch?v=TXkDpqjDMHA
-    fn build_test_weighted_graph() -> (DirectedGraph, impl Fn(&Edge) -> i64) {
+    fn build_test_weighted_dag() -> (DirectedGraph, impl Fn(&Edge) -> i64) {
         let mut g = DirectedGraph::new();
         let mut weights: HashMap<Edge, i64> = HashMap::new();
         weighted_edge(&mut g, &mut weights, 1, 2, 3);
