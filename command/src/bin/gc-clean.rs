@@ -1,10 +1,10 @@
 use clap::{App, Arg};
-use hg_command::arg_utils;
-use hg_command::graph_utils;
-use hg_command::version;
+use gc_command::arg_utils;
+use gc_command::graph_utils;
+use gc_command::version;
 
 fn main() {
-    let args = App::new("hg-clean")
+    let args = App::new("gc-clean")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Cleans a graph")

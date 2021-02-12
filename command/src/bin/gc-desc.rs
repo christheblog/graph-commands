@@ -1,10 +1,10 @@
 use clap::{App, Arg};
-use hg_command::graph_utils;
-use hg_command::version;
-use hg_core::graph::VertexId;
+use gc_command::graph_utils;
+use gc_command::version;
+use gc_core::graph::VertexId;
 
 fn main() {
-    let args = App::new("hg-build")
+    let args = App::new("gc-build")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Prints some basic statistics on the graph")

@@ -1,11 +1,11 @@
 use clap::{App, Arg};
-use hg_command::graph_utils;
-use hg_command::version;
-use hg_core::algorithm::topo_sort;
+use gc_command::graph_utils;
+use gc_command::version;
+use gc_core::algorithm::topo_sort;
 
 
 fn main() {
-    let args = App::new("hg-topo-sort")
+    let args = App::new("gc-topo-sort")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Compute a topological order of a directed graph")

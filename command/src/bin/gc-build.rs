@@ -1,9 +1,9 @@
 use clap::{App, Arg};
-use hg_command::graph_utils;
-use hg_command::version;
+use gc_command::graph_utils;
+use gc_command::version;
 
 fn main() {
-    let args = App::new("hg-build")
+    let args = App::new("gc-build")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Builds a graph from the list of commands")

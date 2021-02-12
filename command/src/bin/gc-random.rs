@@ -1,14 +1,14 @@
-use hg_core::graph::VertexId;
-use hg_core::graph::Edge;
+use gc_core::graph::VertexId;
+use gc_core::graph::Edge;
 use clap::{App, Arg};
-use hg_command::arg_utils;
-use hg_command::graph_utils;
-use hg_command::version;
-use hg_core::directed_graph::DirectedGraph;
+use gc_command::arg_utils;
+use gc_command::graph_utils;
+use gc_command::version;
+use gc_core::directed_graph::DirectedGraph;
 use itertools::Itertools;
 
 fn main() {
-    let args = App::new("hg-random")
+    let args = App::new("gc-random")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Creates a random graph")

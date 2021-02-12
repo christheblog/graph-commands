@@ -1,13 +1,13 @@
 use clap::{App, Arg};
-use hg_command::arg_utils;
-use hg_command::graph_utils;
-use hg_command::version;
-use hg_core::directed_graph::DirectedGraph;
-use hg_core::graph::VertexId;
-use hg_core::path::ScoredPath;
+use gc_command::arg_utils;
+use gc_command::graph_utils;
+use gc_command::version;
+use gc_core::directed_graph::DirectedGraph;
+use gc_core::graph::VertexId;
+use gc_core::path::ScoredPath;
 
 fn main() {
-    let args = App::new("hg-short-path")
+    let args = App::new("gc-short-path")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Builds a graph from the list of commands")
@@ -75,7 +75,7 @@ fn main() {
 }
 
 fn shortest_path(graph: &DirectedGraph, start: VertexId, end: VertexId) -> Option<ScoredPath> {
-    use hg_core::search::a_star;
+    use gc_core::search::a_star;
     a_star::shortest_path(
         graph,
         a_star::one_weighted_edge,

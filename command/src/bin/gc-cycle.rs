@@ -1,18 +1,18 @@
 use clap::{App, Arg, ArgGroup};
-use hg_command::arg_utils;
-use hg_command::graph_utils;
-use hg_command::version;
-use hg_core::algorithm::cycle;
-use hg_core::constraint::constraint::Constraint;
-use hg_core::directed_graph::DirectedGraph;
-use hg_core::graph::VertexId;
-use hg_core::iter::iter_cycle;
-use hg_core::iter::iter_cycle::Cycle;
-use hg_core::path;
+use gc_command::arg_utils;
+use gc_command::graph_utils;
+use gc_command::version;
+use gc_core::algorithm::cycle;
+use gc_core::constraint::constraint::Constraint;
+use gc_core::directed_graph::DirectedGraph;
+use gc_core::graph::VertexId;
+use gc_core::iter::iter_cycle;
+use gc_core::iter::iter_cycle::Cycle;
+use gc_core::path;
 use std::convert::TryInto;
 
 fn main() {
-    let args = App::new("hg-cycle")
+    let args = App::new("gc-cycle")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Identify cycles")

@@ -1,14 +1,14 @@
 use clap::{App, Arg};
-use hg_command::graph_utils;
-use hg_command::arg_utils;
-use hg_command::version;
-use hg_core::directed_graph::DirectedGraph;
-use hg_core::graph::VertexId;
-use hg_core::constraint::constraint::Constraint;
-use hg_core::path::ScoredPath;
+use gc_command::graph_utils;
+use gc_command::arg_utils;
+use gc_command::version;
+use gc_core::directed_graph::DirectedGraph;
+use gc_core::graph::VertexId;
+use gc_core::constraint::constraint::Constraint;
+use gc_core::path::ScoredPath;
 
 fn main() {
-    let args = App::new("hg-csp")
+    let args = App::new("gc-csp")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Constrained short-path")
@@ -239,7 +239,7 @@ fn shortest_path_with_constraints(
     end: VertexId,
     constraints: Vec<Constraint>,
 ) -> Option<ScoredPath> {
-    use hg_core::search::a_star;;
+    use gc_core::search::a_star;;
 
     println!("Constraint that will be applied to search are: ");
     for c in &constraints {

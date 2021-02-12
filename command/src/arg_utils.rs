@@ -1,7 +1,7 @@
-use hg_core::constraint::constraint::Constraint::*;
-use hg_core::constraint::constraint::*;
-use hg_core::graph::Edge;
-use hg_core::graph::VertexId;
+use gc_core::constraint::constraint::Constraint::*;
+use gc_core::constraint::constraint::*;
+use gc_core::graph::Edge;
+use gc_core::graph::VertexId;
 
 // Parsing arguments
 

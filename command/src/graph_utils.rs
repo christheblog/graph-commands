@@ -1,18 +1,18 @@
 //! Collection of useful functions for command-line tools
 
-use hg_core::graph::VertexId;
-use hg_core::graph_command::GraphCommand;
-use hg_core::graph_command::GraphCommand::AddEdge;
-use hg_core::graph_command::GraphCommand::AddVertex;
-use hg_core::graph_command::GraphCommand::RemoveEdge;
-use hg_core::graph_command::GraphCommand::RemoveVertex;
+use gc_core::graph::VertexId;
+use gc_core::graph_command::GraphCommand;
+use gc_core::graph_command::GraphCommand::AddEdge;
+use gc_core::graph_command::GraphCommand::AddVertex;
+use gc_core::graph_command::GraphCommand::RemoveEdge;
+use gc_core::graph_command::GraphCommand::RemoveVertex;
 use std::error::Error;
 use std::fs;
 use std::io;
 use std::path;
 
-use hg_core::directed_graph::DirectedGraph;
-use hg_core::format::gcmd;
+use gc_core::directed_graph::DirectedGraph;
+use gc_core::format::gcmd;
 
 pub const GRAPH_ROOT_DIR: &str = ".graph";
 pub const COMMANDS_FILE: &str = "commands";

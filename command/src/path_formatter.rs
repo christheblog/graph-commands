@@ -1,4 +1,4 @@
-use hg_core::path;
+use gc_core::path;
 
 
 const OVERALL_SCORE: &str = "{score}";
