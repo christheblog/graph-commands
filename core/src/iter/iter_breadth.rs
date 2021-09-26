@@ -104,7 +104,6 @@ fn empty_bfs_path_iter(graph: &DirectedGraph) -> BreadthFirstPathIter {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use std::iter::Iterator;
@@ -214,7 +213,6 @@ mod tests {
             Path::from(&v.iter().map(|id| VertexId(*id)).collect())
         }
 
-
         let mut g = DirectedGraph::new();
         g.add_edge(edge_from(1, 2));
         g.add_edge(edge_from(1, 4));
@@ -248,5 +246,4 @@ mod tests {
             "BFS order is wrong when starting from Vertex 1"
         ];
     }
-
 }

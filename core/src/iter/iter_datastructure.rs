@@ -13,7 +13,7 @@ pub trait SearchQueue<T> {
 }
 
 /// Stack implementation
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct Stack<T> {
     stack: LinkedList<T>,
 }
@@ -37,7 +37,7 @@ impl<T> SearchQueue<T> for Stack<T> {
 }
 
 /// Queue implementation
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct Queue<T> {
     queue: LinkedList<T>,
 }
@@ -61,7 +61,7 @@ impl<T> SearchQueue<T> for Queue<T> {
 }
 
 /// MaxPriorityQueue implementation
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct MaxPriorityQueue<T: Ord> {
     priority_queue: BinaryHeap<T>,
 }
@@ -85,7 +85,7 @@ impl<T: Ord + Debug> SearchQueue<T> for MaxPriorityQueue<T> {
 }
 
 /// MinPriorityQueue implementation
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct MinPriorityQueue<T: Ord> {
     priority_queue: BinaryHeap<Reverse<T>>,
 }
@@ -112,7 +112,7 @@ impl<T: Ord + Debug> SearchQueue<T> for MinPriorityQueue<T> {
 mod tests {
     use super::*;
 
-// Stack
+    // Stack
 
     #[test]
     fn stack_should_have_len_zero_when_empty() {

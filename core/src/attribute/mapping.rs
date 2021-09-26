@@ -8,7 +8,6 @@ use std::hash::Hash;
 pub type VertexAttrMapping<V> = AttributeMapping<VertexId, V>;
 pub type EdgeAttrMapping<V> = AttributeMapping<Edge, V>;
 
-
 /// Empty Vertex Mapping
 pub fn no_vertex_mapping<V>() -> VertexAttrMapping<V> {
     AttributeMapping::<VertexId, V>::new("empty")
@@ -18,7 +17,6 @@ pub fn no_vertex_mapping<V>() -> VertexAttrMapping<V> {
 pub fn no_edge_mapping<V>() -> EdgeAttrMapping<V> {
     AttributeMapping::<Edge, V>::new("empty")
 }
-
 
 /// Mapping between an edge and an attribute value
 /// There should be one mapping per attribute

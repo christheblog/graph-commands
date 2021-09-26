@@ -4,11 +4,10 @@ use crate::graph::VertexId;
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
-
 // DAG Marker
 
 pub struct DAG<'a> {
-    graph: &'a DirectedGraph
+    graph: &'a DirectedGraph,
 }
 
 impl<'a> DAG<'a> {

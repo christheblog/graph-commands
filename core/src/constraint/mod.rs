@@ -1,2 +1,2 @@
-pub mod constraint;
 pub mod checker;
+pub mod constraint;

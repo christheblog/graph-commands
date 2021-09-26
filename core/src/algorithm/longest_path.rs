@@ -1,3 +1,4 @@
+//! Implementation of a longest path algorithm
 use crate::algorithm::shortest_path::dag_shortest_paths;
 use crate::algorithm::topo_sort::DAG;
 

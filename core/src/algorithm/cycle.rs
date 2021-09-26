@@ -1,7 +1,6 @@
-use crate::iter::iter_cycle::Cycle;
-use crate::iter::iter_cycle;
 use crate::directed_graph::DirectedGraph;
-
+use crate::iter::iter_cycle;
+use crate::iter::iter_cycle::Cycle;
 
 /// Find the first cycle at hand
 pub fn first(graph: &DirectedGraph) -> Option<Cycle> {
@@ -44,5 +43,7 @@ pub fn longest(graph: &DirectedGraph) -> Option<Cycle> {
 /// Note: This is a cheap implementation that should work,
 /// since cycles found cannot have a repeated vertex (simple path)
 pub fn hamiltonian(graph: &DirectedGraph) -> Option<Cycle> {
-    iter_cycle::cycle_iter(graph).filter(|c| c.len() == graph.vertex_count()).next()
+    iter_cycle::cycle_iter(graph)
+        .filter(|c| c.len() == graph.vertex_count())
+        .next()
 }

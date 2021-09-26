@@ -1,7 +1,7 @@
+use crate::constraint::constraint::Constraint;
 ///! Best-First search Iterator with constraint implementation
 use crate::directed_graph::DirectedGraph;
 use crate::graph::{Edge, VertexId};
-use crate::constraint::constraint::Constraint;
 use crate::iter::iter_datastructure::{MinPriorityQueue, SearchQueue};
 use crate::path::Path;
 

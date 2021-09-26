@@ -169,25 +169,13 @@ mod tests {
     #[test]
     fn contains_cycle_should_always_be_true_on_partial_path() {
         let path = score_of(path_of(vec![1, 2, 3, 4, 5]), 1);
-        assert_eq!(
-            Constraint::check_partial(
-                &ContainsCycle,
-                &path
-            ),
-            true
-        );
+        assert_eq!(Constraint::check_partial(&ContainsCycle, &path), true);
     }
 
     #[test]
     fn contains_cycle_should_be_true_on_partial_path_with_an_actual_cycle() {
         let path = score_of(path_of(vec![1, 2, 3, 4, 5, 2, 7, 8]), 1);
-        assert_eq!(
-            Constraint::check_partial(
-                &ContainsCycle,
-                &path
-            ),
-            true
-        );
+        assert_eq!(Constraint::check_partial(&ContainsCycle, &path), true);
     }
 
     // MinLength
@@ -375,37 +363,19 @@ mod tests {
     #[test]
     fn contains_cycle_should_be_false_on_complete_path_without_cycle() {
         let path = score_of(path_of(vec![1, 2, 3, 4, 5]), 1);
-        assert_eq!(
-            Constraint::check_complete(
-                &ContainsCycle,
-                &path
-            ),
-            false
-        );
+        assert_eq!(Constraint::check_complete(&ContainsCycle, &path), false);
     }
 
     #[test]
     fn contains_cycle_should_be_true_on_complete_path_with_one_cycle() {
         let path = score_of(path_of(vec![1, 2, 3, 4, 5, 2, 7, 8]), 1);
-        assert_eq!(
-            Constraint::check_complete(
-                &ContainsCycle,
-                &path
-            ),
-            true
-        );
+        assert_eq!(Constraint::check_complete(&ContainsCycle, &path), true);
     }
 
     #[test]
     fn contains_cycle_should_be_true_on_complete_path_with_more_than_one_cycle() {
         let path = score_of(path_of(vec![1, 2, 3, 4, 5, 2, 7, 8, 3, 9, 10, 5, 11]), 1);
-        assert_eq!(
-            Constraint::check_complete(
-                &ContainsCycle,
-                &path
-            ),
-            true
-        );
+        assert_eq!(Constraint::check_complete(&ContainsCycle, &path), true);
     }
 
     // MinLength

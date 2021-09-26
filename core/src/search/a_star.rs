@@ -1,8 +1,8 @@
 //! A* implementation
+use crate::constraint::constraint::Constraint;
 use crate::directed_graph::DirectedGraph;
 use crate::graph::VertexId;
 use crate::iter;
-use crate::constraint::constraint::Constraint;
 use crate::path::Path;
 use crate::path::ScoredPath;
 
@@ -58,15 +58,15 @@ where
         start,
     )
     .find(|sp| {
-        sp.path.last().map(|x| *x) == Some(end) &&
-        all_constraints.iter().all(|c| c.check_complete(sp))
+        sp.path.last().map(|x| *x) == Some(end)
+            && all_constraints.iter().all(|c| c.check_complete(sp))
     })
 }
 
 /// Weight of one per edge
 pub fn one_weighted_edge(_: &DirectedGraph, path: &Path) -> i64 {
     use std::convert::TryInto;
-    (path.size() -1).try_into().unwrap()
+    (path.size() - 1).try_into().unwrap()
 }
 
 /// Zero information heuristic function
@@ -140,5 +140,4 @@ mod tests {
     fn edge_from(src: u64, end: u64) -> Edge {
         Edge(VertexId(src), VertexId(end))
     }
-
 }

@@ -35,9 +35,9 @@ pub fn is_path_hamiltonian(path: &Path, graph: &DirectedGraph) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::iter::Iterator;
     use crate::graph::Edge;
     use crate::graph::VertexId;
+    use std::iter::Iterator;
 
     #[test]
     fn is_hamiltonian_should_return_true_for_an_empty_graph_by_convention() {
@@ -79,7 +79,7 @@ mod tests {
         ];
 
         assert![
-            first_path(&g).filter(|p| p.size()==5).is_some(),
+            first_path(&g).filter(|p| p.size() == 5).is_some(),
             "The length of a Hamiltonian path should be the number of vertices of the graph"
         ];
     }

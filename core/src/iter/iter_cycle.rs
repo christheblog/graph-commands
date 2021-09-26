@@ -186,13 +186,14 @@ mod tests {
     }
 
     #[test]
-    fn extract_canonical_cycle_from_last_should_return_none_if_there_is_no_cycle_involving_the_last_element()
-    {
+    fn extract_canonical_cycle_from_last_should_return_none_if_there_is_no_cycle_involving_the_last_element(
+    ) {
         assert!(extract_canonical_cycle_from_last(&path(vec![7, 3, 2, 5, 8, 9, 5, 12])).is_none());
     }
 
     #[test]
-    fn extract_canonical_cycle_from_last_should_return_a_cycle_involving_the_last_element_if_it_exists() {
+    fn extract_canonical_cycle_from_last_should_return_a_cycle_involving_the_last_element_if_it_exists(
+    ) {
         assert_eq!(
             extract_canonical_cycle_from_last(&path(vec![7, 3, 2, 5, 8, 9, 2])),
             cycle(vec![2, 5, 8, 9])

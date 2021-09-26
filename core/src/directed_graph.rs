@@ -1,8 +1,8 @@
 //! Directed graph data structure
 use std::collections::HashMap;
 
-use crate::graph::*;
 use crate::graph::Edge;
+use crate::graph::*;
 
 /// A directed graph structure that doesn't contain any information concerning the vertex or the
 /// edge attributes
