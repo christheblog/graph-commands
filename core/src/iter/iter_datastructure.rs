@@ -1,9 +1,12 @@
+///! Generic data structure interface for graph search algorithm
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
-///! Generic datastructure interface for graph search algorithm
 use std::collections::LinkedList;
 use std::fmt::Debug;
 
+/// Trait for queues used in graph iteration algorithm
+/// Depending on the implementation of the iterations will have different behaviours
+/// depth-first, breadth first, best first, ...
 pub trait SearchQueue<T> {
     fn push(&mut self, elt: T) -> ();
     fn pop(&mut self) -> Option<T>;
@@ -109,7 +112,7 @@ impl<T: Ord + Debug> SearchQueue<T> for MinPriorityQueue<T> {
 mod tests {
     use super::*;
 
-    // Stack
+// Stack
 
     #[test]
     fn stack_should_have_len_zero_when_empty() {

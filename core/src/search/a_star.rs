@@ -1,3 +1,4 @@
+//! A* implementation
 use crate::directed_graph::DirectedGraph;
 use crate::graph::VertexId;
 use crate::iter;

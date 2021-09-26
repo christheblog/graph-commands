@@ -1,3 +1,6 @@
+//! Provides a mapping of attributes for vertices and edges
+//! Since Vertices are represented by ids, this is the way to add information to a graph
+//! Note: This keeps the graph structure and information attached to it separated
 use crate::graph::*;
 use std::collections::HashMap;
 use std::hash::Hash;
@@ -17,8 +20,8 @@ pub fn no_edge_mapping<V>() -> EdgeAttrMapping<V> {
 }
 
 
-// Mapping between an edge and an attribute value
-// There should be one mapping per attribute
+/// Mapping between an edge and an attribute value
+/// There should be one mapping per attribute
 pub struct AttributeMapping<K: Eq + Hash, V> {
     name: String,
     mapping: HashMap<K, V>,

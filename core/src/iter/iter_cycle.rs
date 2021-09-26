@@ -1,3 +1,4 @@
+//! Cycle iterator
 use crate::directed_graph::DirectedGraph;
 use crate::graph::{Edge, VertexId};
 use crate::iter::iter_datastructure::{SearchQueue, Stack};

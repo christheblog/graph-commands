@@ -1,3 +1,4 @@
+//! Commands to iteratively build/update a mapping by adding/removing mapped values to vertices and edges
 use crate::graph::*;
 use crate::attribute::mapping::*;
 

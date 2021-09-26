@@ -1,3 +1,4 @@
+//! Commands to iteratively build/update a graph by adding/removing vertices and edges
 use crate::directed_graph::DirectedGraph;
 use crate::graph::{Edge, VertexId};
 

@@ -1,10 +1,10 @@
+///! Depth-First search iterator
+use std::collections::HashSet;
+
 use crate::directed_graph::DirectedGraph;
 use crate::graph::{Edge, VertexId};
 use crate::iter::iter_datastructure::{SearchQueue, Stack};
-///! Graph Iterator implementation
 use crate::path::Path;
-
-use std::collections::HashSet;
 
 /// Depth-First search iterator
 /// Generates vertex as visited by a depth-first search
@@ -115,8 +115,9 @@ fn empty_dfs_path_iter(graph: &DirectedGraph) -> DepthFirstPathIter {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::iter::Iterator;
+
+    use super::*;
 
     #[test]
     fn dfs_iterator_on_an_empty_graph_should_be_empty() {

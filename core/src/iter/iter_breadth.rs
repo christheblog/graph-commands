@@ -1,13 +1,12 @@
+///! Breadth-First search Iterator
+use std::collections::HashSet;
+
 use crate::directed_graph::DirectedGraph;
 use crate::graph::{Edge, VertexId};
 use crate::iter::iter_datastructure::{Queue, SearchQueue};
-///! Graph Iterator implementation
 use crate::path::Path;
 
-use std::collections::HashSet;
-
 /// Breadth-First search iterator
-
 pub struct BreadthFirstIter<'a> {
     queue: Queue<VertexId>,
     visited: HashSet<VertexId>,
@@ -108,8 +107,9 @@ fn empty_bfs_path_iter(graph: &DirectedGraph) -> BreadthFirstPathIter {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::iter::Iterator;
+
+    use super::*;
 
     #[test]
     fn bfs_iterator_on_an_empty_graph_should_be_empty() {

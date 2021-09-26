@@ -1,3 +1,6 @@
+//! Base classes for a graph implementation
+//! Vertex and Edges are based on ids
+
 /// Identifies and represents a vertex in a graph.
 #[derive(PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, Debug)]
 pub struct VertexId(pub u64);

@@ -4,7 +4,7 @@ use gc_command::version;
 use gc_core::graph::VertexId;
 
 fn main() {
-    let args = App::new("gc-build")
+    let args = App::new("gc-desc")
         .version(version::VERSION)
         .author(version::AUTHOR)
         .about("Prints some basic statistics on the graph")

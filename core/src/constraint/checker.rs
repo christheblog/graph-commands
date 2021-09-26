@@ -17,7 +17,7 @@ use std::collections::HashSet;
 /// An incompatible set of constraints should lead to no solution straight away
 ///
 /// Note:
-/// This simple validation doesn't look into And/Or/Xor statement, not dig recursively in a bunch of Not(Not(...)) definition
+/// This simple validation doesn't look into And/Or/Xor statement, nor dig recursively in a bunch of Not(Not(...)) definition
 pub fn validate(constraints: &Vec<Constraint>) -> Result<(), String> {
     check_vertex_inclusion_exclusion(constraints)?;
     check_edge_inclusion_exclusion(constraints)?;

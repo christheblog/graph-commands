@@ -1,7 +1,8 @@
-use crate::graph::Edge;
+//! Directed graph data structure
 use std::collections::HashMap;
 
 use crate::graph::*;
+use crate::graph::Edge;
 
 /// A directed graph structure that doesn't contain any information concerning the vertex or the
 /// edge attributes
@@ -148,8 +149,9 @@ impl DirectedGraph {
 
 #[cfg(test)]
 mod test {
-    use super::DirectedGraph;
     use crate::graph::{Edge, VertexId};
+
+    use super::DirectedGraph;
 
     #[test]
     fn test_add_vertex() {
